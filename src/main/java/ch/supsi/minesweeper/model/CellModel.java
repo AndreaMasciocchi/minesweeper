@@ -11,11 +11,11 @@ public class CellModel implements CellEventHandler{
 
     @Override
     public void rightClick() {
-
+        isCovered = !isCovered;
     }
 
     @Override
     public void leftClick() {
-        hasFlag = true;
+        hasFlag = !hasFlag;
     }
 }

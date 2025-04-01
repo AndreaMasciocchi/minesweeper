@@ -28,7 +28,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
 
     @Override
     public void move() {
-        return;
+
     }
 
     // add all the relevant missing behaviours
