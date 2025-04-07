@@ -4,6 +4,7 @@ import ch.supsi.minesweeper.model.GameEventHandler;
 import ch.supsi.minesweeper.model.GameModel;
 import ch.supsi.minesweeper.model.PlayerEventHandler;
 import ch.supsi.minesweeper.view.DataView;
+import javafx.scene.control.Alert;
 
 import java.util.List;
 
@@ -54,6 +55,20 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
     public void move() {
         this.gameModel.move();
         views.forEach(DataView::update);
+    }
+
+    @Override
+    public void help() {
+
+    }
+
+    @Override
+    public void about() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText("Informazioni sull'app");
+        alert.setContentText("Questa è una semplice applicazione JavaFX.\nVersione: 1.0.0");
+        alert.showAndWait();
     }
 
 }
