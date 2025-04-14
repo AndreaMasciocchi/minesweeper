@@ -13,7 +13,7 @@ public class UserPreferencesModel implements UserPreferencesInterface {
     protected UserPreferencesModel() { userPereferences = preferencesDao.getPreferences(); }
 
     public static UserPreferencesModel getInstance() {
-        if (preferencesDao == null) {
+        if (model == null) {
             model = new UserPreferencesModel();
         }
 

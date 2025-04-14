@@ -18,11 +18,11 @@ public class UserPreferencesController {
         return controller;
     }
 
-    public String getTestPreferences() {
-            return model.getPreferences("Test");
+    public String getLanguagePreferences() {
+            return model.getPreferences("Language");
     }
 
-    public String getTimePreferences() {
-        return model.getPreferences("Time");
+    public int getMinesPreferences() {
+        return Integer.parseInt(model.getPreferences("Mines"));
     }
 }
