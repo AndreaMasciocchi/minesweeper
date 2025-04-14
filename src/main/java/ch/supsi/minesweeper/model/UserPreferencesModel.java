@@ -33,5 +33,19 @@ public class UserPreferencesModel implements UserPreferencesInterface {
         return userPereferences.getProperty(key);
     }
 
+    @Override
+    public void setPreferences(String key, String value) {
+        if (key == null || key.isEmpty()) {
+            return;
+        }
+
+        if (userPereferences == null) {
+            return;
+        }
+
+        userPereferences.setProperty(key, value);
+        preferencesDao.setPreferences(userPereferences);
+    }
+
 
 }

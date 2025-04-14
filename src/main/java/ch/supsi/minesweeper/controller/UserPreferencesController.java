@@ -25,4 +25,12 @@ public class UserPreferencesController {
     public int getMinesPreferences() {
         return Integer.parseInt(model.getPreferences("Mines"));
     }
+
+    public void setLanguagePreferences(String language) {
+        model.setPreferences("Language", language);
+    }
+
+    public void setMinesPreferences(int mines) {
+        model.setPreferences("Mines", String.valueOf(mines));
+    }
 }

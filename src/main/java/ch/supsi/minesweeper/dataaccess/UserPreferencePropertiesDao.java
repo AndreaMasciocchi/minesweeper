@@ -5,6 +5,7 @@ import ch.supsi.minesweeper.model.PreferencesDataAccessInterface;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.spec.ECField;
 import java.util.Properties;
 
 public class UserPreferencePropertiesDao implements PreferencesDataAccessInterface {
@@ -125,4 +126,15 @@ public class UserPreferencePropertiesDao implements PreferencesDataAccessInterfa
         // return the properties object with the loaded preferences
         return userPreferences;
     }
+
+    @Override
+    public void setPreferences(Properties preferences) {
+        try {
+            FileOutputStream outputStream = new FileOutputStream(String.valueOf(getUserPreferencesFilePath()));
+            preferences.store(outputStream, "Saved preferences");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
