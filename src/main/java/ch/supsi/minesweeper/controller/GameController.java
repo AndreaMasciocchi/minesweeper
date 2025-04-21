@@ -59,7 +59,11 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
 
     @Override
     public void help() {
-
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Help");
+        alert.setHeaderText("Come si gioca?");
+        alert.setContentText("Ogni turno devi selezionare una casella\nSe fai esplodere una bomba hai perso");
+        alert.showAndWait();
     }
 
     @Override
@@ -67,7 +71,7 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About");
         alert.setHeaderText("Informazioni sull'app");
-        alert.setContentText("Questa è una semplice applicazione JavaFX.\nVersione: 1.0.0");
+        alert.setContentText("Minesweeper\nVersione: 1.0.0\nAutori: Mongillo, Masciocchi, Aliprandi");
         alert.showAndWait();
     }
 
