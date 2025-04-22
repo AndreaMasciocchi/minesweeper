@@ -8,6 +8,8 @@ public interface GameEventHandler extends EventHandler {
 
     void save();
 
+    void saveAs();
+
     void help();
 
     void about();

@@ -43,9 +43,14 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
     @Override
     public void save() {
         // do whatever you must do to start a new game
-
+        gameModel.save();
         // then update your views
         this.views.forEach(DataView::update);
+    }
+
+    @Override
+    public void saveAs() {
+        gameModel.saveAs();
     }
 
     // add all the relevant methods to handle all those defined by the GameEventHandler interface
@@ -62,7 +67,7 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Help");
         alert.setHeaderText("Come si gioca?");
-        alert.setContentText("Ogni turno devi selezionare una casella\nSe fai esplodere una bomba hai perso");
+        alert.setContentText("Ogni turno devi selezionare una casella\n Se fai esplodere una bomba hai perso");
         alert.showAndWait();
     }
 

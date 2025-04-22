@@ -8,7 +8,7 @@ public class GridModel {
     private static GridModel myself;
     private final int numberOfBombs;
     private int numberOfFlagsAvailable;
-    private String feedback;
+    private transient String feedback;
     private final static UserPreferencesModel preferences = UserPreferencesModel.getInstance();
     private final CellModel[][] grid = new CellModel[GRID_DIMENSION][GRID_DIMENSION];
 

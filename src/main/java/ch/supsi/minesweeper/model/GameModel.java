@@ -1,14 +1,23 @@
 package ch.supsi.minesweeper.model;
 
+import ch.supsi.minesweeper.dataaccess.SaveGameDAO;
 import ch.supsi.minesweeper.view.GameBoardViewFxml;
+import ch.supsi.minesweeper.view.MenuBarViewFxml;
 import ch.supsi.minesweeper.view.UserFeedbackViewFxml;
+
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler{
 
     private static GameModel myself;
     private final GridModel grid = GridModel.getInstance();
+    private final SaveGameDAO persistenceUtilities = SaveGameDAO.getInstance();
     private final GameBoardViewFxml boardView = GameBoardViewFxml.getInstance();
     private final UserFeedbackViewFxml feedbackView = UserFeedbackViewFxml.getInstance();
+    private final MenuBarViewFxml menuView = MenuBarViewFxml.getInstance();
+    private String feedback;
 
     private GameModel() {
         super();
@@ -29,7 +38,36 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
 
     @Override
     public void save() {
+        try {
+            persistenceUtilities.persist(grid);
+        } catch (FileNotFoundException e) {
+            setUserFeedback("Aborted: an error occurred while saving the game");
+            feedbackView.update();
+            return;
+        }
+        menuView.disableSave();
+    }
 
+    @Override
+    public void saveAs() {
+        FileDialog fileDialog = new FileDialog(new Frame(),"Save as",FileDialog.SAVE);
+        fileDialog.setVisible(true);
+        String directory = fileDialog.getDirectory();
+        if(directory==null){
+            setUserFeedback("Aborted: game not saved");
+            feedbackView.update();
+            return;
+        }
+        String name = fileDialog.getFile();
+        File file = new File(directory+File.separator+name);
+        try {
+            persistenceUtilities.persist(grid,file);
+        } catch (FileNotFoundException e) {
+            setUserFeedback("Aborted: an error occurred while saving the game");
+            feedbackView.update();
+            return;
+        }
+        menuView.disableSave();
     }
 
     @Override
@@ -41,8 +79,11 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     public void about() {
 
     }
+    private void setUserFeedback(String msg){
+        feedback = msg;
+    }
     public String getUserFeedback(){
-        return grid.getFeedback();
+        return feedback;
     }
     public int getGridDimension(){
         return grid.getGridDimension();
@@ -61,10 +102,12 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     }
     @Override
     public void move(int row,int column, boolean isLeftClick) {
+        menuView.enableSave();
         if(isLeftClick)
             grid.leftClick(row,column);
         else
             grid.rightClick(row,column);
+        setUserFeedback(grid.getFeedback());
         boardView.updateCell(row,column);
         feedbackView.update();
     }

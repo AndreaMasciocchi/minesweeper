@@ -83,6 +83,7 @@ public class MenuBarViewFxml implements ControlledFxView {
 
         // save
         this.saveMenuItem.setOnAction(event -> this.gameEventHandler.save());
+        this.saveAsMenuItem.setOnAction(event->this.gameEventHandler.saveAs());
 
         // add event handlers for all necessary menu items
         // ...
@@ -101,6 +102,16 @@ public class MenuBarViewFxml implements ControlledFxView {
         // get your data from the model, if needed
         // then update this view here
         System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
+    }
+
+    public void enableSave(){
+        this.saveMenuItem.setDisable(false);
+        this.saveAsMenuItem.setDisable(false);
+    }
+
+    public void disableSave(){
+        this.saveMenuItem.setDisable(true);
+        this.saveAsMenuItem.setDisable(true);
     }
 
 }
