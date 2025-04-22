@@ -9,13 +9,25 @@ public class CellModel implements CellEventHandler{
         hasBomb = bomb;
     }
 
+    public boolean isCovered(){
+        return isCovered;
+    }
+
+    public boolean hasFlag(){
+        return hasFlag;
+    }
+
+    public boolean hasBomb() {
+        return hasBomb;
+    }
+
     @Override
     public void rightClick() {
-        isCovered = !isCovered;
+        hasFlag = !hasFlag;
     }
 
     @Override
     public void leftClick() {
-        hasFlag = !hasFlag;
+        isCovered = false;
     }
 }

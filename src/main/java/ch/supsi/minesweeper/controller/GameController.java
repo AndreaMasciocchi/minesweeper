@@ -2,6 +2,7 @@ package ch.supsi.minesweeper.controller;
 
 import ch.supsi.minesweeper.model.GameEventHandler;
 import ch.supsi.minesweeper.model.GameModel;
+import ch.supsi.minesweeper.model.GridModel;
 import ch.supsi.minesweeper.model.PlayerEventHandler;
 import ch.supsi.minesweeper.view.DataView;
 import javafx.scene.control.Alert;
@@ -13,7 +14,6 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
     private static GameController myself;
 
     private GameModel gameModel;
-
     private List<DataView> views;
 
     private GameController () {
@@ -52,9 +52,9 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
     // ...
 
     @Override
-    public void move() {
-        this.gameModel.move();
-        views.forEach(DataView::update);
+    public void move(int row, int column,boolean isLeftClick) {
+        this.gameModel.move(row,column,isLeftClick);
+        //views.forEach(DataView::update);
     }
 
     @Override

@@ -8,12 +8,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
+import java.text.Annotation;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class GameBoardViewFxml implements ControlledFxView {
@@ -266,16 +270,27 @@ public class GameBoardViewFxml implements ControlledFxView {
 
     @FXML
     private Button cell87;
-
     @FXML
     private Button cell88;
-    
-    private GameBoardViewFxml() {}
+    private final ArrayList<Button> buttons = new ArrayList<>();
+    private GameBoardViewFxml() {
+    }
+    private void initializeButtonsList(){
+        for(Field f : GameBoardViewFxml.class.getDeclaredFields()){
+            if(f.isAnnotationPresent(FXML.class) && f.getType().equals(Button.class)){
+                f.setAccessible(true);
+                try {
+                    buttons.add((Button) f.get(this));
+                } catch (IllegalAccessException e) {
+                    //
+                }
+            }
+        }
+    }
 
     public static GameBoardViewFxml getInstance() {
         if (myself == null) {
             myself = new GameBoardViewFxml();
-
             try {
                 URL fxmlUrl = GameBoardViewFxml.class.getResource("/gameboard.fxml");
                 if (fxmlUrl != null) {
@@ -287,6 +302,7 @@ public class GameBoardViewFxml implements ControlledFxView {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            myself.initializeButtonsList();
         }
 
         return myself;
@@ -300,28 +316,55 @@ public class GameBoardViewFxml implements ControlledFxView {
     }
 
     private void createBehaviour() {
-        // cell00
-        this.cell00.setOnAction(event -> this.playerEventHandler.move());
-
-        // cell01
-        this.cell01.setOnAction(event -> this.playerEventHandler.move());
-
-        // add event handlers for all necessary buttons
-        // ...
+        for(Button button : buttons){
+            button.setOnMouseClicked(event->this.playerEventHandler.move(button.getId().charAt(4)-'0',button.getId().charAt(5)-'0',event.getButton()==MouseButton.PRIMARY));
+        }
     }
 
     @Override
     public Node getNode() {
         return this.containerPane;
     }
+    private void checkCellStatusAndSetButtonText(int row, int column){
+        int dimension = gameModel.getGridDimension();
+        Button button = buttons.get(row*dimension+column);
+        if(!gameModel.isCellCovered(row,column)){
+            if(gameModel.hasCellBomb(row,column)) {
+                button.setText("\uD83D\uDCA3");
+                for(Button b : buttons)
+                    b.setDisable(true);
+            }
+            else
+                button.setText(String.valueOf(gameModel.getNumberOfAdjacentBombs(row,column)));
+        }else if(gameModel.isCellFlagged(row,column))
+            button.setText(new String(Character.toChars(0x2691)));
+        else
+            button.setText(button.getId().charAt(4)+","+button.getId().charAt(5));
+    }
 
     @Override
     public void update() {
         // get your data from the model, if needed
         // then update this view here
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Date date = new Date(System.currentTimeMillis());
-        System.out.println(this.getClass().getSimpleName() + " updated..." + dateFormat.format(date));
+
+        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        //Date date = new Date(System.currentTimeMillis());
+        //System.out.println(this.getClass().getSimpleName() + " updated..." + dateFormat.format(date));
+
+        int dimension = gameModel.getGridDimension();
+        for(int i=0;i<dimension;i++){
+            for(int j=0;j<dimension;j++){
+                checkCellStatusAndSetButtonText(i,j);
+            }
+        }
+        System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
     }
 
+    public void updateCell(int row, int column){
+        int dimension = gameModel.getGridDimension();
+        if(row < 0 || row >= dimension || column < 0 || column >= dimension)
+            return;
+        checkCellStatusAndSetButtonText(row,column);
+        System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
+    }
 }
