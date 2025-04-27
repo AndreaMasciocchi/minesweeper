@@ -11,7 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SaveGameDAO {
     private static final String userHomeDirectory = System.getProperty("user.home");
@@ -41,8 +45,23 @@ public class SaveGameDAO {
 
     public void persist(GridModel grid) throws FileNotFoundException{
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        if(lastSavedFile==null)
-            lastSavedFile = new File(savingsPath.toString()+File.separator+dateFormat.format(new Date()));
+        if(lastSavedFile==null) {
+            lastSavedFile = new File(savingsPath.toString() + File.separator + dateFormat.format(new Date())+".json");
+            if(lastSavedFile.exists()) {
+                File directory = new File(savingsPath.toString());
+                File[] files = directory.listFiles();
+                Arrays.sort(files);
+                Pattern pattern = Pattern.compile("-([0-9]+)\\.");
+                Matcher matcher;
+                int previousNumber = 0;
+                for(File file : files){
+                    matcher = pattern.matcher(file.getName());
+                    if(matcher.find())
+                        previousNumber = Integer.parseInt(matcher.group(1))-previousNumber!=1 ? previousNumber : Integer.parseInt(matcher.group(1));
+                }
+                lastSavedFile = new File(savingsPath.toString() + File.separator + dateFormat.format(new Date()) +"-"+(++previousNumber)+".json");
+            }
+        }
         Gson gson = new Gson();
         String json = gson.toJson(grid);
         PrintWriter writer = new PrintWriter(lastSavedFile);
