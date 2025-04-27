@@ -45,6 +45,8 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             feedbackView.update();
             return;
         }
+        setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
+        feedbackView.update();
         menuView.disableSave();
     }
 
@@ -67,6 +69,8 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             feedbackView.update();
             return;
         }
+        setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
+        feedbackView.update();
         menuView.disableSave();
     }
 

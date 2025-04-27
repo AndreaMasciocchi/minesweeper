@@ -17,8 +17,8 @@ public class SaveGameDAO {
     private static final String userHomeDirectory = System.getProperty("user.home");
     private static final String savedGamesDirectory = ".minesweeper"+ File.separator+"savings";
     private static SaveGameDAO myself;
-    private int sequentialFileNumber = 1;
     private Path savingsPath;
+    private File lastSavedFile = null;
 
     private SaveGameDAO(){
         try {
@@ -35,27 +35,27 @@ public class SaveGameDAO {
         return myself;
     }
 
+    public String getLastSavedFileAbsolutePath(){
+        return lastSavedFile.getAbsolutePath();
+    }
+
     public void persist(GridModel grid) throws FileNotFoundException{
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        File file = new File(savingsPath.toString()+File.separator+dateFormat.format(new Date()));
-        if(file.exists())
-            file = new File(savingsPath.toString()+File.separator+dateFormat.format(new Date())+"-"+(sequentialFileNumber++));
-        else
-            sequentialFileNumber = 1;
+        if(lastSavedFile==null)
+            lastSavedFile = new File(savingsPath.toString()+File.separator+dateFormat.format(new Date()));
         Gson gson = new Gson();
         String json = gson.toJson(grid);
-        PrintWriter writer = new PrintWriter(file);
-        writer.println(json);
+        PrintWriter writer = new PrintWriter(lastSavedFile);
+        writer.print(json);
         writer.close();
-        System.out.println("Game saved to "+file.getName());
     }
 
     public void persist(GridModel grid, File file) throws FileNotFoundException{
         Gson gson = new Gson();
         String json = gson.toJson(grid);
         PrintWriter writer = new PrintWriter(file);
-        writer.println(json);
+        writer.print(json);
         writer.close();
-        System.out.println("Game saved to "+file.getName());
+        lastSavedFile = file.getAbsoluteFile();
     }
 }
