@@ -14,6 +14,8 @@ public interface GameEventHandler extends EventHandler {
 
     void about();
 
+    void open(final boolean isGameSaved);
+
     // add all the relevant missing behaviours
     // ...
 

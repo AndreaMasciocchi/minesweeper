@@ -4,15 +4,23 @@ import ch.supsi.minesweeper.dataaccess.SaveGameDAO;
 import ch.supsi.minesweeper.view.GameBoardViewFxml;
 import ch.supsi.minesweeper.view.MenuBarViewFxml;
 import ch.supsi.minesweeper.view.UserFeedbackViewFxml;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.JsonSyntaxException;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Optional;
+import java.util.Scanner;
 
 public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler{
 
     private static GameModel myself;
-    private final GridModel grid = GridModel.getInstance();
+    private GridModel grid = GridModel.getInstance();
     private final SaveGameDAO persistenceUtilities = SaveGameDAO.getInstance();
     private final GameBoardViewFxml boardView = GameBoardViewFxml.getInstance();
     private final UserFeedbackViewFxml feedbackView = UserFeedbackViewFxml.getInstance();
@@ -85,6 +93,51 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     public void about() {
 
     }
+
+    @Override
+    public void open(final boolean isGameSaved) {
+        if(!isGameSaved){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Game not saved");
+            alert.setHeaderText("Are you sure you want to start a new game without saving the current one?");
+            alert.setContentText("If you confirm, all the progresses made in the current game will be definitively lost.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.isPresent() && result.get()==ButtonType.CANCEL)
+                return;
+        }
+        FileDialog fileDialog = new FileDialog(new Frame(),"Choose file",FileDialog.LOAD);
+        fileDialog.setVisible(true);
+        String fileName = fileDialog.getFile();
+        if(fileName==null){
+            setUserFeedback("Aborted: no game loaded");
+            feedbackView.update();
+            return;
+        }
+        File file = new File(fileDialog.getDirectory()+File.separator+fileName);
+        String json;
+        try(Scanner reader = new Scanner(file)){
+            StringBuilder sb = new StringBuilder();
+            while(reader.hasNextLine())
+                sb.append(reader.nextLine());
+            json = sb.toString();
+        }catch(FileNotFoundException e){
+            setUserFeedback("Aborted: an error occurred while reading the file");
+            feedbackView.update();
+            return;
+        }
+        Gson gson = new GsonBuilder().registerTypeAdapter(GridModel.class,(InstanceCreator<GridModel>) type -> GridModel.getInstance()).create();
+        try{
+            grid = gson.fromJson(json, GridModel.class);
+        }catch(JsonSyntaxException e){
+            setUserFeedback("Aborted: file corrupted or invalid format");
+            feedbackView.update();
+            return;
+        }
+        setUserFeedback("Game loaded from "+fileName);
+        feedbackView.update();
+        menuView.disableSave();
+    }
+
     private void setUserFeedback(String msg){
         feedback = msg;
     }

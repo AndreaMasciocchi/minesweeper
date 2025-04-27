@@ -6,8 +6,10 @@ import ch.supsi.minesweeper.model.GridModel;
 import ch.supsi.minesweeper.model.PlayerEventHandler;
 import ch.supsi.minesweeper.view.DataView;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.util.List;
+import java.util.Optional;
 
 public class GameController implements GameEventHandler, PlayerEventHandler {
 
@@ -42,10 +44,7 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
 
     @Override
     public void save() {
-        // do whatever you must do to start a new game
         gameModel.save();
-        // then update your views
-        this.views.forEach(DataView::update);
     }
 
     @Override
@@ -78,6 +77,12 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
         alert.setHeaderText("Informazioni sull'app");
         alert.setContentText("Minesweeper\nVersione: 1.0.0\nAutori: Mongillo, Masciocchi, Aliprandi");
         alert.showAndWait();
+    }
+
+    @Override
+    public void open(final boolean isGameSaved) {
+        gameModel.open(isGameSaved);
+        views.forEach(DataView::update);
     }
 
 }
