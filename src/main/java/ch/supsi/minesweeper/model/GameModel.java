@@ -4,12 +4,11 @@ import ch.supsi.minesweeper.dataaccess.SaveGameDAO;
 import ch.supsi.minesweeper.view.GameBoardViewFxml;
 import ch.supsi.minesweeper.view.MenuBarViewFxml;
 import ch.supsi.minesweeper.view.UserFeedbackViewFxml;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.File;
@@ -100,7 +99,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Game not saved");
             alert.setHeaderText("Are you sure you want to start a new game without saving the current one?");
-            alert.setContentText("If you confirm, all the progresses made in the current game will be definitively lost.");
+            alert.setContentText("All the progresses made in the current game will be definitively lost.");
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isPresent() && result.get()==ButtonType.CANCEL)
                 return;
@@ -113,7 +112,8 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             feedbackView.update();
             return;
         }
-        File file = new File(fileDialog.getDirectory()+File.separator+fileName);
+        String dir = fileDialog.getDirectory();
+        File file = new File(dir+File.separator+fileName);
         String json;
         try(Scanner reader = new Scanner(file)){
             StringBuilder sb = new StringBuilder();
@@ -127,13 +127,20 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         Gson gson = new GsonBuilder().registerTypeAdapter(GridModel.class,(InstanceCreator<GridModel>) type -> GridModel.getInstance()).create();
         try{
-            grid = gson.fromJson(json, GridModel.class);
-        }catch(JsonSyntaxException e){
-            setUserFeedback("Aborted: file corrupted or invalid format");
+            new JSONObject(json);
+        }catch (JSONException e){
+            setUserFeedback("Aborted: invalid file format");
             feedbackView.update();
             return;
         }
-        setUserFeedback("Game loaded from "+fileName);
+        try{
+            grid = gson.fromJson(json, GridModel.class);
+        }catch(JsonSyntaxException e){
+            setUserFeedback("Aborted: file corrupted");
+            feedbackView.update();
+            return;
+        }
+        setUserFeedback("Game loaded from "+dir+fileName);
         feedbackView.update();
         menuView.disableSave();
     }

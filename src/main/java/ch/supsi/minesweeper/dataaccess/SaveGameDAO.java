@@ -51,13 +51,13 @@ public class SaveGameDAO {
                 File directory = new File(savingsPath.toString());
                 File[] files = directory.listFiles();
                 Arrays.sort(files);
-                Pattern pattern = Pattern.compile("-([0-9]+)\\.");
+                Pattern pattern = Pattern.compile("("+dateFormat.format(new Date())+")"+"-([0-9]+)\\.");
                 Matcher matcher;
                 int previousNumber = 0;
                 for(File file : files){
                     matcher = pattern.matcher(file.getName());
                     if(matcher.find())
-                        previousNumber = Integer.parseInt(matcher.group(1))-previousNumber!=1 ? previousNumber : Integer.parseInt(matcher.group(1));
+                        previousNumber = Integer.parseInt(matcher.group(2))-previousNumber!=1 ? previousNumber : Integer.parseInt(matcher.group(2));
                 }
                 lastSavedFile = new File(savingsPath.toString() + File.separator + dateFormat.format(new Date()) +"-"+(++previousNumber)+".json");
             }
