@@ -70,7 +70,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         String name = fileDialog.getFile();
         File file = new File(directory+File.separator+name);
-        if(!file.exists() && !name.contains(".json"))
+        if(!file.exists() && !name.endsWith(".json"))
             file = new File(directory+File.separator+name+".json");
         try {
             persistenceUtilities.persist(grid,file);
