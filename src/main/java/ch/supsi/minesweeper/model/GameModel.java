@@ -184,13 +184,34 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     @Override
     public void move(int row,int column, boolean isLeftClick) {
         menuView.enableSave();
-        if(isLeftClick)
-            grid.leftClick(row,column);
+        if(isLeftClick) {
+            grid.leftClick(row, column);
+            if(grid.isBombTriggered()) {
+                menuView.disableSave();
+            } else if (getNumberOfAdjacentBombs(row,column)==0 && grid.isEasyMode()) {
+                uncoverEmptyAdjacentCells(row,column);
+            }
+        }
         else
             grid.rightClick(row,column);
         setUserFeedback(grid.getFeedback());
         boardView.updateCell(row,column);
         feedbackView.update();
+    }
+
+    private void uncoverEmptyAdjacentCells(final int row, final int column){
+        if(isCellCovered(row-1,column) && getNumberOfAdjacentBombs(row-1,column)==0)
+            move(row-1,column,true);
+        if(isCellCovered(row,column-1) && getNumberOfAdjacentBombs(row,column-1)==0)
+            move(row,column-1,true);
+        if(isCellCovered(row-1,column-1) && getNumberOfAdjacentBombs(row-1,column-1)==0)
+            move(row-1,column-1,true);
+        if(isCellCovered(row+1,column) && getNumberOfAdjacentBombs(row+1,column)==0)
+            move(row+1,column,true);
+        if(isCellCovered(row,column+1) && getNumberOfAdjacentBombs(row,column+1)==0)
+            move(row,column+1,true);
+        if(isCellCovered(row+1,column+1) && getNumberOfAdjacentBombs(row+1,column+1)==0)
+            move(row+1,column+1,true);
     }
 
     // add all the relevant missing behaviours

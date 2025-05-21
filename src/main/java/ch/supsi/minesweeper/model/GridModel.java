@@ -16,10 +16,14 @@ public class GridModel {
     private final static UserPreferencesModel preferences = UserPreferencesModel.getInstance();
     @JsonProperty(required = true)
     private final CellModel[][] grid = new CellModel[GRID_DIMENSION][GRID_DIMENSION];
+    @JsonProperty(required = true)
+    private final boolean easyMode;
+    private transient boolean bombTriggered = false;
 
-    private GridModel(final int numberOfBombs){
+    private GridModel(final int numberOfBombs, final boolean easyMode){
         this.numberOfBombs = numberOfBombs;
         this.numberOfFlagsAvailable = numberOfBombs;
+        this.easyMode = easyMode;
 
         ArrayList<Boolean> bombsDistribution = new ArrayList<>();
         for(int i=0;i<numberOfBombs;i++)
@@ -42,7 +46,8 @@ public class GridModel {
     public static GridModel getInstance(){
         if(myself==null) {
             int numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
-            myself = new GridModel(numberOfBombs);
+            boolean easyMode = Boolean.parseBoolean(preferences.getPreferences("EasyMode"));
+            myself = new GridModel(numberOfBombs,easyMode);
         }
         return myself;
     }
@@ -61,6 +66,14 @@ public class GridModel {
         if(!isCoordinatesValid(row,column))
             return false;
         return grid[row][column].hasBomb();
+    }
+    public boolean isBombTriggered(){
+        boolean triggered = bombTriggered;
+        bombTriggered = false;
+        return triggered;
+    }
+    public boolean isEasyMode(){
+        return easyMode;
     }
     public boolean isCellFlagged(int row,int column){
         if(!isCoordinatesValid(row,column))
@@ -101,6 +114,7 @@ public class GridModel {
         cell.leftClick();
         if(cell.hasBomb()){
             feedback = "You triggered a bomb! Game over!";
+            bombTriggered = true;
         }
     }
 

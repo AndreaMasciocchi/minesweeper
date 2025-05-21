@@ -325,6 +325,8 @@ public class GameBoardViewFxml implements ControlledFxView {
     public Node getNode() {
         return this.containerPane;
     }
+
+    //TODO: split in two different methods (single responsibility principle)
     private void checkCellStatusAndSetButtonText(int row, int column){
         int dimension = gameModel.getGridDimension();
         Button button = buttons.get(row*dimension+column);
