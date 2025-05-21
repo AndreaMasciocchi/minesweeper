@@ -4,7 +4,12 @@ import ch.supsi.minesweeper.dataaccess.SaveGameDAO;
 import ch.supsi.minesweeper.view.GameBoardViewFxml;
 import ch.supsi.minesweeper.view.MenuBarViewFxml;
 import ch.supsi.minesweeper.view.UserFeedbackViewFxml;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
+import com.google.gson.stream.MalformedJsonException;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import org.json.JSONException;
@@ -13,6 +18,7 @@ import org.json.JSONObject;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -133,10 +139,19 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             feedbackView.update();
             return;
         }
+        JsonValidator validator = new JsonValidator();
         try{
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(json);
+            if(!validator.isJsonValid(jsonNode,validator.getJsonSchema(GridModel.class)))
+                throw new MalformedJsonException("");
             grid = gson.fromJson(json, GridModel.class);
-        }catch(JsonSyntaxException e){
+        }catch(JsonSyntaxException | MalformedJsonException e){
             setUserFeedback("Aborted: file corrupted");
+            feedbackView.update();
+            return;
+        } catch (JsonProcessingException e) {
+            setUserFeedback("Aborted: error parsing json");
             feedbackView.update();
             return;
         }

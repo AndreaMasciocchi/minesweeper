@@ -1,15 +1,20 @@
 package ch.supsi.minesweeper.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class GridModel {
     private final static int GRID_DIMENSION = 9;
     private static GridModel myself;
+    @JsonProperty(required = true)
     private final int numberOfBombs;
+    @JsonProperty(required = true)
     private int numberOfFlagsAvailable;
     private transient String feedback;
     private final static UserPreferencesModel preferences = UserPreferencesModel.getInstance();
+    @JsonProperty(required = true)
     private final CellModel[][] grid = new CellModel[GRID_DIMENSION][GRID_DIMENSION];
 
     private GridModel(final int numberOfBombs){
