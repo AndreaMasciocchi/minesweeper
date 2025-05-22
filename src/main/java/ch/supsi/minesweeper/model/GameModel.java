@@ -1,9 +1,7 @@
 package ch.supsi.minesweeper.model;
 
 import ch.supsi.minesweeper.dataaccess.SaveGameDAO;
-import ch.supsi.minesweeper.view.GameBoardViewFxml;
-import ch.supsi.minesweeper.view.MenuBarViewFxml;
-import ch.supsi.minesweeper.view.UserFeedbackViewFxml;
+import ch.supsi.minesweeper.view.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,10 +25,11 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     private static GameModel myself;
     private GridModel grid = GridModel.getInstance();
     private final SaveGameDAO persistenceUtilities = SaveGameDAO.getInstance();
-    private final GameBoardViewFxml boardView = GameBoardViewFxml.getInstance();
-    private final UserFeedbackViewFxml feedbackView = UserFeedbackViewFxml.getInstance();
-    private final MenuBarViewFxml menuView = MenuBarViewFxml.getInstance();
+    private final ControlledFxView boardView = GameBoardViewFxml.getInstance();
+    private final UncontrolledFxView feedbackView = UserFeedbackViewFxml.getInstance();
+    private final MenuView menuView = MenuBarViewFxml.getInstance();
     private String feedback;
+    private boolean gameOver = false;
 
     private GameModel() {
         super();
@@ -60,7 +59,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
         feedbackView.update();
-        menuView.disableSave();
+        menuView.setEnableSave(false);
     }
 
     @Override
@@ -86,7 +85,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
         feedbackView.update();
-        menuView.disableSave();
+        menuView.setEnableSave(false);
     }
 
     @Override
@@ -157,7 +156,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         setUserFeedback("Game loaded from "+dir+fileName);
         feedbackView.update();
-        menuView.disableSave();
+        menuView.setEnableSave(false);
     }
 
     private void setUserFeedback(String msg){
@@ -181,21 +180,26 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     public boolean isCellFlagged(int row,int column){
         return grid.isCellFlagged(row,column);
     }
+    public boolean isGameOver(){
+        return gameOver;
+    }
     @Override
     public void move(int row,int column, boolean isLeftClick) {
-        menuView.enableSave();
+        menuView.setEnableSave(true);
         if(isLeftClick) {
             grid.leftClick(row, column);
-            if(grid.isBombTriggered()) {
-                menuView.disableSave();
-            } else if (getNumberOfAdjacentBombs(row,column)==0 && grid.isEasyMode()) {
+            if (getNumberOfAdjacentBombs(row,column)==0) {
                 uncoverEmptyAdjacentCells(row,column);
             }
         }
         else
             grid.rightClick(row,column);
         setUserFeedback(grid.getFeedback());
-        boardView.updateCell(row,column);
+        if(grid.isBombTriggered()) {
+            menuView.setEnableSave(false);
+            gameOver = true;
+        }
+        boardView.update();
         feedbackView.update();
     }
 

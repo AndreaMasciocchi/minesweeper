@@ -14,16 +14,15 @@ public class GridModel {
     private int numberOfFlagsAvailable;
     private transient String feedback;
     private final static UserPreferencesModel preferences = UserPreferencesModel.getInstance();
+
+    //TODO: see possibility of substitution with 'CellInterface' and adaptation of deserializer
     @JsonProperty(required = true)
     private final CellModel[][] grid = new CellModel[GRID_DIMENSION][GRID_DIMENSION];
-    @JsonProperty(required = true)
-    private final boolean easyMode;
     private transient boolean bombTriggered = false;
 
-    private GridModel(final int numberOfBombs, final boolean easyMode){
+    private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
         this.numberOfFlagsAvailable = numberOfBombs;
-        this.easyMode = easyMode;
 
         ArrayList<Boolean> bombsDistribution = new ArrayList<>();
         for(int i=0;i<numberOfBombs;i++)
@@ -46,8 +45,7 @@ public class GridModel {
     public static GridModel getInstance(){
         if(myself==null) {
             int numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
-            boolean easyMode = Boolean.parseBoolean(preferences.getPreferences("EasyMode"));
-            myself = new GridModel(numberOfBombs,easyMode);
+            myself = new GridModel(numberOfBombs);
         }
         return myself;
     }
@@ -71,9 +69,6 @@ public class GridModel {
         boolean triggered = bombTriggered;
         bombTriggered = false;
         return triggered;
-    }
-    public boolean isEasyMode(){
-        return easyMode;
     }
     public boolean isCellFlagged(int row,int column){
         if(!isCoordinatesValid(row,column))

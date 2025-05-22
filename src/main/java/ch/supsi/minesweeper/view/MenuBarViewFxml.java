@@ -14,7 +14,7 @@ import javafx.scene.control.MenuItem;
 import java.io.IOException;
 import java.net.URL;
 
-public class MenuBarViewFxml implements ControlledFxView {
+public class MenuBarViewFxml implements MenuView {
 
     private static MenuBarViewFxml myself;
 
@@ -105,16 +105,13 @@ public class MenuBarViewFxml implements ControlledFxView {
         System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
     }
 
-    public void enableSave(){
-        this.saveMenuItem.setDisable(false);
-        this.saveAsMenuItem.setDisable(false);
+    @Override
+    public void setEnableSave(boolean flag){
+        this.saveMenuItem.setDisable(!flag);
+        this.saveMenuItem.setDisable(!flag);
     }
 
-    public void disableSave(){
-        this.saveMenuItem.setDisable(true);
-        this.saveAsMenuItem.setDisable(true);
-    }
-
+    @Override
     public boolean isSaveDisabled(){
         return this.saveMenuItem.isDisable();
     }

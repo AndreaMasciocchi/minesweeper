@@ -286,6 +286,8 @@ public class GameBoardViewFxml implements ControlledFxView {
                 }
             }
         }
+        for(Button b : buttons)
+            b.setText("");
     }
 
     public static GameBoardViewFxml getInstance() {
@@ -326,47 +328,38 @@ public class GameBoardViewFxml implements ControlledFxView {
         return this.containerPane;
     }
 
-    //TODO: split in two different methods (single responsibility principle)
-    private void checkCellStatusAndSetButtonText(int row, int column){
-        int dimension = gameModel.getGridDimension();
-        Button button = buttons.get(row*dimension+column);
-        if(!gameModel.isCellCovered(row,column)){
-            if(gameModel.hasCellBomb(row,column)) {
-                button.setText("\uD83D\uDCA3");
-                for(Button b : buttons)
-                    b.setDisable(true);
-            }
-            else
-                button.setText(String.valueOf(gameModel.getNumberOfAdjacentBombs(row,column)));
-        }else if(gameModel.isCellFlagged(row,column))
-            button.setText(new String(Character.toChars(0x2691)));
-        else
-            button.setText(button.getId().charAt(4)+","+button.getId().charAt(5));
-    }
-
     @Override
     public void update() {
-        // get your data from the model, if needed
-        // then update this view here
-
-        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        //Date date = new Date(System.currentTimeMillis());
-        //System.out.println(this.getClass().getSimpleName() + " updated..." + dateFormat.format(date));
-
         int dimension = gameModel.getGridDimension();
+        Button button;
+        if(gameModel.isGameOver()){
+            for(int i=0;i<dimension;i++){
+                for(int j=0;j<dimension;j++){
+                    button = buttons.get(i*dimension+j);
+                    button.setDisable(true);
+                    if(gameModel.hasCellBomb(i,j)) {
+                        button.setText("\uD83D\uDCA3");
+                        button.setStyle("-fx-background-color: #ff0000; ");
+                    }
+                }
+            }
+            System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
+            return;
+        }
         for(int i=0;i<dimension;i++){
             for(int j=0;j<dimension;j++){
-                checkCellStatusAndSetButtonText(i,j);
+                button = buttons.get(i*dimension+j);
+                if(!gameModel.isCellCovered(i,j)) {
+                    button.setText(String.valueOf(gameModel.getNumberOfAdjacentBombs(i, j)));
+                    continue;
+                }
+                if(gameModel.isCellFlagged(i,j)){
+                    button.setText(new String(Character.toChars(0x2691)));
+                    continue;
+                }
+                button.setText("");
             }
         }
-        System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
-    }
-
-    public void updateCell(int row, int column){
-        int dimension = gameModel.getGridDimension();
-        if(row < 0 || row >= dimension || column < 0 || column >= dimension)
-            return;
-        checkCellStatusAndSetButtonText(row,column);
         System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
     }
 }
