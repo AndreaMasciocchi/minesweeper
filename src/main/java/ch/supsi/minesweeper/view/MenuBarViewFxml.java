@@ -100,15 +100,9 @@ public class MenuBarViewFxml implements MenuView {
 
     @Override
     public void update() {
-        // get your data from the model, if needed
-        // then update this view here
+        this.saveMenuItem.setDisable(!gameModel.isGameSavable());
+        this.saveAsMenuItem.setDisable(!gameModel.isGameSavable());
         System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
-    }
-
-    @Override
-    public void setEnableSave(boolean flag){
-        this.saveMenuItem.setDisable(!flag);
-        this.saveMenuItem.setDisable(!flag);
     }
 
     @Override

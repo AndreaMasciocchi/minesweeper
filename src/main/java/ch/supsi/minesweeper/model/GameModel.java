@@ -25,11 +25,9 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     private static GameModel myself;
     private GridModel grid = GridModel.getInstance();
     private final SaveGameDAO persistenceUtilities = SaveGameDAO.getInstance();
-    private final ControlledFxView boardView = GameBoardViewFxml.getInstance();
-    private final UncontrolledFxView feedbackView = UserFeedbackViewFxml.getInstance();
-    private final MenuView menuView = MenuBarViewFxml.getInstance();
     private String feedback;
     private boolean gameOver = false;
+    private boolean gameSavable = false;
 
     private GameModel() {
         super();
@@ -43,6 +41,14 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         return myself;
     }
 
+    private void setGameSavable(final boolean flag){
+        gameSavable = flag;
+    }
+
+    public boolean isGameSavable(){
+        return gameSavable;
+    }
+
     @Override
     public void newGame() {
 
@@ -54,12 +60,10 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             persistenceUtilities.persist(grid);
         } catch (FileNotFoundException e) {
             setUserFeedback("Aborted: an error occurred while saving the game");
-            feedbackView.update();
             return;
         }
         setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
-        feedbackView.update();
-        menuView.setEnableSave(false);
+        setGameSavable(false);
     }
 
     @Override
@@ -69,7 +73,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         String directory = fileDialog.getDirectory();
         if(directory==null){
             setUserFeedback("Aborted: game not saved");
-            feedbackView.update();
             return;
         }
         String name = fileDialog.getFile();
@@ -80,12 +83,10 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             persistenceUtilities.persist(grid,file);
         } catch (FileNotFoundException e) {
             setUserFeedback("Aborted: an error occurred while saving the game");
-            feedbackView.update();
             return;
         }
         setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
-        feedbackView.update();
-        menuView.setEnableSave(false);
+        setGameSavable(false);
     }
 
     @Override
@@ -114,7 +115,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         String fileName = fileDialog.getFile();
         if(fileName==null){
             setUserFeedback("Aborted: no game loaded");
-            feedbackView.update();
             return;
         }
         String dir = fileDialog.getDirectory();
@@ -127,7 +127,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             json = sb.toString();
         }catch(FileNotFoundException e){
             setUserFeedback("Aborted: an error occurred while reading the file");
-            feedbackView.update();
             return;
         }
         Gson gson = new GsonBuilder().registerTypeAdapter(GridModel.class,(InstanceCreator<GridModel>) type -> GridModel.getInstance()).create();
@@ -135,7 +134,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             new JSONObject(json);
         }catch (JSONException e){
             setUserFeedback("Aborted: invalid file format");
-            feedbackView.update();
             return;
         }
         JsonValidator validator = new JsonValidator();
@@ -147,16 +145,13 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             grid = gson.fromJson(json, GridModel.class);
         }catch(JsonSyntaxException | MalformedJsonException e){
             setUserFeedback("Aborted: file corrupted");
-            feedbackView.update();
             return;
         } catch (JsonProcessingException e) {
             setUserFeedback("Aborted: error parsing json");
-            feedbackView.update();
             return;
         }
         setUserFeedback("Game loaded from "+dir+fileName);
-        feedbackView.update();
-        menuView.setEnableSave(false);
+        setGameSavable(false);
     }
 
     private void setUserFeedback(String msg){
@@ -185,7 +180,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     }
     @Override
     public void move(int row,int column, boolean isLeftClick) {
-        menuView.setEnableSave(true);
+        setGameSavable(true);
         if(isLeftClick) {
             grid.leftClick(row, column);
             if (getNumberOfAdjacentBombs(row,column)==0) {
@@ -196,11 +191,9 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             grid.rightClick(row,column);
         setUserFeedback(grid.getFeedback());
         if(grid.isBombTriggered()) {
-            menuView.setEnableSave(false);
+            setGameSavable(false);
             gameOver = true;
         }
-        boardView.update();
-        feedbackView.update();
     }
 
     private void uncoverEmptyAdjacentCells(final int row, final int column){
@@ -217,8 +210,4 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         if(isCellCovered(row+1,column+1) && getNumberOfAdjacentBombs(row+1,column+1)==0)
             move(row+1,column+1,true);
     }
-
-    // add all the relevant missing behaviours
-    // ...
-
 }

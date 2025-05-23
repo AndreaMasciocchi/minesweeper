@@ -2,24 +2,20 @@ package ch.supsi.minesweeper.controller;
 
 import ch.supsi.minesweeper.model.GameEventHandler;
 import ch.supsi.minesweeper.model.GameModel;
-import ch.supsi.minesweeper.model.GridModel;
-import ch.supsi.minesweeper.model.PlayerEventHandler;
 import ch.supsi.minesweeper.view.DataView;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 
 import java.util.List;
-import java.util.Optional;
 
-public class GameController implements GameEventHandler, PlayerEventHandler {
+public class GameController implements GameEventHandler{
 
     private static GameController myself;
 
-    private GameModel gameModel;
+    private GameEventHandler handler;
     private List<DataView> views;
 
     private GameController () {
-        this.gameModel = GameModel.getInstance();
+        this.handler = GameModel.getInstance();
     }
 
     public static GameController getInstance() {
@@ -44,22 +40,18 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
 
     @Override
     public void save() {
-        gameModel.save();
+        handler.save();
+        views.forEach(DataView::update);
     }
 
     @Override
     public void saveAs() {
-        gameModel.saveAs();
+        handler.saveAs();
+        views.forEach(DataView::update);
     }
 
     // add all the relevant methods to handle all those defined by the GameEventHandler interface
     // ...
-
-    @Override
-    public void move(int row, int column,boolean isLeftClick) {
-        this.gameModel.move(row,column,isLeftClick);
-        //views.forEach(DataView::update);
-    }
 
     @Override
     public void help() {
@@ -81,7 +73,7 @@ public class GameController implements GameEventHandler, PlayerEventHandler {
 
     @Override
     public void open(final boolean isGameSaved) {
-        gameModel.open(isGameSaved);
+        handler.open(isGameSaved);
         views.forEach(DataView::update);
     }
 
