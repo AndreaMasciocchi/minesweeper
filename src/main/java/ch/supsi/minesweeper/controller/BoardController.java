@@ -27,7 +27,7 @@ public class BoardController implements PlayerEventHandler {
 
     @Override
     public void move(int row, int column,boolean isLeftClick) {
-        this.handler.move(row,column,isLeftClick);
+        handler.move(row,column,isLeftClick);
         views.forEach(DataView::update);
     }
 }

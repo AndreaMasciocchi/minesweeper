@@ -32,10 +32,8 @@ public class GameController implements GameEventHandler{
 
     @Override
     public void newGame() {
-        // do whatever you must do to start a new game
-
-        // then update your views
-        this.views.forEach(DataView::update);
+        handler.newGame();
+        views.forEach(DataView::update);
     }
 
     @Override
@@ -72,8 +70,8 @@ public class GameController implements GameEventHandler{
     }
 
     @Override
-    public void open(final boolean isGameSaved) {
-        handler.open(isGameSaved);
+    public void open() {
+        handler.open();
         views.forEach(DataView::update);
     }
 

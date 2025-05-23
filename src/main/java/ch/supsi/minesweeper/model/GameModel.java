@@ -51,7 +51,18 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
 
     @Override
     public void newGame() {
-
+        if(isGameSavable()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Game not saved");
+            alert.setHeaderText("Are you sure you want to start a new game without saving the current one?");
+            alert.setContentText("All the progresses made in the current game will be definitively lost.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.isPresent() && result.get()==ButtonType.CANCEL)
+                return;
+        }
+        grid.reset();
+        grid = GridModel.getInstance();
+        gameOver = false;
     }
 
     @Override
@@ -100,8 +111,8 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     }
 
     @Override
-    public void open(final boolean isGameSaved) {
-        if(!isGameSaved){
+    public void open() {
+        if(isGameSavable()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Game not saved");
             alert.setHeaderText("Are you sure you want to start a new game without saving the current one?");

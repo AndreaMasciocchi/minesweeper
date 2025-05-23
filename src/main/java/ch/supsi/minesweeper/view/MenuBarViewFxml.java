@@ -14,7 +14,7 @@ import javafx.scene.control.MenuItem;
 import java.io.IOException;
 import java.net.URL;
 
-public class MenuBarViewFxml implements MenuView {
+public class MenuBarViewFxml implements ControlledFxView {
 
     private static MenuBarViewFxml myself;
 
@@ -85,9 +85,9 @@ public class MenuBarViewFxml implements MenuView {
         this.saveMenuItem.setOnAction(event -> this.gameEventHandler.save());
         this.saveAsMenuItem.setOnAction(event->this.gameEventHandler.saveAs());
 
-        this.openMenuItem.setOnAction(event->this.gameEventHandler.open(this.isSaveDisabled()));
-        // add event handlers for all necessary menu items
-        // ...
+        this.openMenuItem.setOnAction(event->this.gameEventHandler.open());
+
+        this.newMenuItem.setOnAction(event->this.gameEventHandler.newGame());
 
         this.aboutMenuItem.setOnAction(actionEvent -> this.gameEventHandler.about());
         this.helpMenuItem.setOnAction(actionEvent -> this.gameEventHandler.help());
@@ -103,11 +103,6 @@ public class MenuBarViewFxml implements MenuView {
         this.saveMenuItem.setDisable(!gameModel.isGameSavable());
         this.saveAsMenuItem.setDisable(!gameModel.isGameSavable());
         System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
-    }
-
-    @Override
-    public boolean isSaveDisabled(){
-        return this.saveMenuItem.isDisable();
     }
 
 }

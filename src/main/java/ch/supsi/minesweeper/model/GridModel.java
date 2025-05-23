@@ -49,6 +49,9 @@ public class GridModel {
         }
         return myself;
     }
+    public void reset(){
+        myself = new GridModel(numberOfBombs);
+    }
     public int getGridDimension(){
         return GRID_DIMENSION;
     }

@@ -286,8 +286,10 @@ public class GameBoardViewFxml implements ControlledFxView {
                 }
             }
         }
-        for(Button b : buttons)
+        for(Button b : buttons) {
             b.setText("");
+            b.setStyle("-fx-background-color: silver");
+        }
     }
 
     public static GameBoardViewFxml getInstance() {
@@ -349,10 +351,13 @@ public class GameBoardViewFxml implements ControlledFxView {
         for(int i=0;i<dimension;i++){
             for(int j=0;j<dimension;j++){
                 button = buttons.get(i*dimension+j);
+                button.setDisable(false);
                 if(!gameModel.isCellCovered(i,j)) {
                     button.setText(String.valueOf(gameModel.getNumberOfAdjacentBombs(i, j)));
+                    button.setStyle("-fx-background-color: lightgrey");
                     continue;
                 }
+                button.setStyle("-fx-background-color: silver");
                 if(gameModel.isCellFlagged(i,j)){
                     button.setText(new String(Character.toChars(0x2691)));
                     continue;
