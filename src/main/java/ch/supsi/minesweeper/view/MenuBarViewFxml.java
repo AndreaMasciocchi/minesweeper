@@ -1,6 +1,7 @@
 package ch.supsi.minesweeper.view;
 
 import ch.supsi.minesweeper.controller.EventHandler;
+import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.AbstractModel;
 import ch.supsi.minesweeper.model.GameEventHandler;
 import ch.supsi.minesweeper.model.GameModel;
@@ -48,6 +49,8 @@ public class MenuBarViewFxml implements ControlledFxView {
     @FXML
     private MenuItem helpMenuItem;
 
+    private LanguageDAO language = LanguageDAO.getInstance();
+
     private MenuBarViewFxml() {}
 
     public static MenuBarViewFxml getInstance() {
@@ -75,6 +78,7 @@ public class MenuBarViewFxml implements ControlledFxView {
         this.createBehaviour();
         this.gameEventHandler = (GameEventHandler) eventHandler;
         this.gameModel = (GameModel) model;
+        this.setLanguage();
     }
 
     private void createBehaviour() {
@@ -85,12 +89,34 @@ public class MenuBarViewFxml implements ControlledFxView {
         this.saveMenuItem.setOnAction(event -> this.gameEventHandler.save());
         this.saveAsMenuItem.setOnAction(event->this.gameEventHandler.saveAs());
 
+        //Open
         this.openMenuItem.setOnAction(event->this.gameEventHandler.open(this.isSaveDisabled()));
         // add event handlers for all necessary menu items
         // ...
 
+        //about
         this.aboutMenuItem.setOnAction(actionEvent -> this.gameEventHandler.about());
         this.helpMenuItem.setOnAction(actionEvent -> this.gameEventHandler.help());
+    }
+
+    private void setLanguage() {
+        //File Menu
+        this.fileMenu.setText(language.getString("label.file"));
+        this.openMenuItem.setText(language.getString("label.file.open"));
+        this.newMenuItem.setText(language.getString("label.file.new"));
+        this.saveMenuItem.setText(language.getString("label.file.save"));
+        this.saveAsMenuItem.setText(language.getString("label.file.saveAs"));
+        this.quitMenuItem.setText(language.getString("label.file.quit"));
+
+        //Edit Menu
+        this.editMenu.setText(language.getString("label.edit"));
+        this.preferencesMenuItem.setText(language.getString("label.edit.preferences"));
+
+        //Help Menu
+        this.helpMenu.setText(language.getString("label.help"));
+        this.aboutMenuItem.setText(language.getString("label.help.about"));
+        this.helpMenuItem.setText(language.getString("label.help"));
+
     }
 
     @Override
