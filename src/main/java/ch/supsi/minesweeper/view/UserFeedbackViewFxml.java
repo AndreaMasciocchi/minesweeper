@@ -1,6 +1,7 @@
 package ch.supsi.minesweeper.view;
 
 import ch.supsi.minesweeper.model.AbstractModel;
+import ch.supsi.minesweeper.model.GameInformationHandler;
 import ch.supsi.minesweeper.model.GameModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,22 +11,14 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class UserFeedbackViewFxml implements UncontrolledFxView {
-
     private static UserFeedbackViewFxml myself;
-
-    private GameModel gameModel;
-
+    private GameInformationHandler gameInformationHandler;
     @FXML
     private ScrollPane containerPane;
-
     @FXML
     private Text userFeedbackBar;
-
     private UserFeedbackViewFxml() {}
 
     public static UserFeedbackViewFxml getInstance() {
@@ -50,7 +43,7 @@ public class UserFeedbackViewFxml implements UncontrolledFxView {
 
     @Override
     public void initialize(AbstractModel model) {
-        this.gameModel = (GameModel) model;
+        this.gameInformationHandler = (GameModel) model;
     }
 
     @Override
@@ -60,7 +53,7 @@ public class UserFeedbackViewFxml implements UncontrolledFxView {
 
     @Override
     public void update() {
-        this.userFeedbackBar.setText(gameModel.getUserFeedback());
+        this.userFeedbackBar.setText(gameInformationHandler.getUserFeedback());
     }
 
 }

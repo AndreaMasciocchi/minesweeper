@@ -2,6 +2,7 @@ package ch.supsi.minesweeper.view;
 
 import ch.supsi.minesweeper.controller.EventHandler;
 import ch.supsi.minesweeper.model.AbstractModel;
+import ch.supsi.minesweeper.model.GameInformationHandler;
 import ch.supsi.minesweeper.model.GameModel;
 import ch.supsi.minesweeper.model.PlayerEventHandler;
 import javafx.fxml.FXML;
@@ -14,11 +15,7 @@ import javafx.scene.layout.GridPane;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.text.Annotation;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class GameBoardViewFxml implements ControlledFxView {
 
@@ -26,7 +23,7 @@ public class GameBoardViewFxml implements ControlledFxView {
 
     private PlayerEventHandler playerEventHandler;
 
-    private GameModel gameModel;
+    private GameInformationHandler gameInformationHandler;
 
     @FXML
     private GridPane containerPane;
@@ -316,7 +313,7 @@ public class GameBoardViewFxml implements ControlledFxView {
     public void initialize(EventHandler eventHandler, AbstractModel model) {
         this.createBehaviour();
         this.playerEventHandler = (PlayerEventHandler) eventHandler;
-        this.gameModel = (GameModel) model;
+        this.gameInformationHandler = (GameModel) model;
     }
 
     private void createBehaviour() {
@@ -332,14 +329,14 @@ public class GameBoardViewFxml implements ControlledFxView {
 
     @Override
     public void update() {
-        int dimension = gameModel.getGridDimension();
+        int dimension = gameInformationHandler.getGridDimension();
         Button button;
-        if(gameModel.isGameOver()){
+        if(gameInformationHandler.isGameOver()){
             for(int i=0;i<dimension;i++){
                 for(int j=0;j<dimension;j++){
                     button = buttons.get(i*dimension+j);
                     button.setDisable(true);
-                    if(gameModel.hasCellBomb(i,j)) {
+                    if(gameInformationHandler.hasCellBomb(i,j)) {
                         button.setText("\uD83D\uDCA3");
                         button.setStyle("-fx-background-color: #ff0000; ");
                     }
@@ -352,13 +349,13 @@ public class GameBoardViewFxml implements ControlledFxView {
             for(int j=0;j<dimension;j++){
                 button = buttons.get(i*dimension+j);
                 button.setDisable(false);
-                if(!gameModel.isCellCovered(i,j)) {
-                    button.setText(String.valueOf(gameModel.getNumberOfAdjacentBombs(i, j)));
+                if(!gameInformationHandler.isCellCovered(i,j)) {
+                    button.setText(String.valueOf(gameInformationHandler.getNumberOfAdjacentBombs(i, j)));
                     button.setStyle("-fx-background-color: lightgrey");
                     continue;
                 }
                 button.setStyle("-fx-background-color: silver");
-                if(gameModel.isCellFlagged(i,j)){
+                if(gameInformationHandler.isCellFlagged(i,j)){
                     button.setText(new String(Character.toChars(0x2691)));
                     continue;
                 }

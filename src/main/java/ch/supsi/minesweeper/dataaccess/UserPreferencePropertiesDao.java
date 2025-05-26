@@ -126,6 +126,10 @@ public class UserPreferencePropertiesDao implements PreferencesDataAccessInterfa
         // return the properties object with the loaded preferences
         return userPreferences;
     }
+    @Override
+    public Properties getDefaultPreferences(){
+        return loadDefaultPreferences();
+    }
 
     @Override
     public void setPreferences(Properties preferences) {

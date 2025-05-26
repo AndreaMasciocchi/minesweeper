@@ -3,6 +3,7 @@ package ch.supsi.minesweeper.view;
 import ch.supsi.minesweeper.controller.EventHandler;
 import ch.supsi.minesweeper.model.AbstractModel;
 import ch.supsi.minesweeper.model.GameEventHandler;
+import ch.supsi.minesweeper.model.GameInformationHandler;
 import ch.supsi.minesweeper.model.GameModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,12 +16,9 @@ import java.io.IOException;
 import java.net.URL;
 
 public class MenuBarViewFxml implements ControlledFxView {
-
     private static MenuBarViewFxml myself;
-
     private GameEventHandler gameEventHandler;
-    private GameModel gameModel;
-
+    private GameInformationHandler gameInformationHandler;
     @FXML
     private MenuBar menuBar;
 
@@ -74,7 +72,7 @@ public class MenuBarViewFxml implements ControlledFxView {
     public void initialize(EventHandler eventHandler, AbstractModel model) {
         this.createBehaviour();
         this.gameEventHandler = (GameEventHandler) eventHandler;
-        this.gameModel = (GameModel) model;
+        this.gameInformationHandler = (GameModel) model;
     }
 
     private void createBehaviour() {
@@ -100,8 +98,8 @@ public class MenuBarViewFxml implements ControlledFxView {
 
     @Override
     public void update() {
-        this.saveMenuItem.setDisable(!gameModel.isGameSavable());
-        this.saveAsMenuItem.setDisable(!gameModel.isGameSavable());
+        this.saveMenuItem.setDisable(!gameInformationHandler.isGameSavable());
+        this.saveAsMenuItem.setDisable(!gameInformationHandler.isGameSavable());
         System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
     }
 

@@ -6,17 +6,17 @@ import ch.supsi.minesweeper.view.DataView;
 
 import java.util.List;
 
-public class BoardController implements PlayerEventHandler {
-    private static BoardController myself;
+public class GameBoardController implements PlayerEventHandler {
+    private static GameBoardController myself;
     private PlayerEventHandler handler;
     private List<DataView> views;
-    private BoardController(){
+    private GameBoardController(){
         this.handler = GameModel.getInstance();
     }
 
-    public static BoardController getInstance(){
+    public static GameBoardController getInstance(){
         if(myself==null){
-            myself = new BoardController();
+            myself = new GameBoardController();
         }
         return myself;
     }

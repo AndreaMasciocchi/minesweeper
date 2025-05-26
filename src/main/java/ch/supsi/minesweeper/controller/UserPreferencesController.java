@@ -4,18 +4,18 @@ import ch.supsi.minesweeper.model.UserPreferencesModel;
 
 public class UserPreferencesController {
 
-    private static UserPreferencesController controller;
+    private static UserPreferencesController myself;
 
     private static final UserPreferencesInterface model = UserPreferencesModel.getInstance();
 
     protected UserPreferencesController() {}
 
     public static UserPreferencesController getInstance() {
-        if (controller == null) {
-            controller = new UserPreferencesController();
+        if (myself == null) {
+            myself = new UserPreferencesController();
         }
 
-        return controller;
+        return myself;
     }
 
     public String getLanguagePreferences() {

@@ -1,9 +1,7 @@
 package ch.supsi.minesweeper.model;
 
-import ch.supsi.minesweeper.dataaccess.SaveGameDAO;
-import ch.supsi.minesweeper.view.*;
+import ch.supsi.minesweeper.dataaccess.JsonPersistenceDAO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
@@ -16,15 +14,13 @@ import org.json.JSONObject;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler{
-
+public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler, GameInformationHandler{
     private static GameModel myself;
     private GridModel grid = GridModel.getInstance();
-    private final SaveGameDAO persistenceUtilities = SaveGameDAO.getInstance();
+    private final DataPersistenceInterface persistenceUtilities = JsonPersistenceDAO.getInstance();
     private String feedback;
     private boolean gameOver = false;
     private boolean gameSavable = false;
@@ -60,9 +56,18 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             if(result.isPresent() && result.get()==ButtonType.CANCEL)
                 return;
         }
+        if(!isGameOver()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Start new game");
+            alert.setHeaderText("Are you sure you want to start a new game?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.isPresent() && result.get()==ButtonType.CANCEL)
+                return;
+        }
         grid.reset();
         grid = GridModel.getInstance();
         gameOver = false;
+        setUserFeedback("New game started!");
     }
 
     @Override
@@ -164,28 +169,34 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         setUserFeedback("Game loaded from "+dir+fileName);
         setGameSavable(false);
     }
-
     private void setUserFeedback(String msg){
         feedback = msg;
     }
+    @Override
     public String getUserFeedback(){
         return feedback;
     }
+    @Override
     public int getGridDimension(){
         return grid.getGridDimension();
     }
+    @Override
     public boolean isCellCovered(int row,int column){
         return grid.isCellCovered(row,column);
     }
+    @Override
     public boolean hasCellBomb(int row, int column){
         return grid.hasCellBomb(row,column);
     }
+    @Override
     public int getNumberOfAdjacentBombs(int row,int column){
         return grid.getNumberOfAdjacentBombs(row,column);
     }
+    @Override
     public boolean isCellFlagged(int row,int column){
         return grid.isCellFlagged(row,column);
     }
+    @Override
     public boolean isGameOver(){
         return gameOver;
     }

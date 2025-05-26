@@ -8,9 +8,7 @@ import javafx.scene.control.Alert;
 import java.util.List;
 
 public class GameController implements GameEventHandler{
-
     private static GameController myself;
-
     private GameEventHandler handler;
     private List<DataView> views;
 
@@ -47,10 +45,6 @@ public class GameController implements GameEventHandler{
         handler.saveAs();
         views.forEach(DataView::update);
     }
-
-    // add all the relevant methods to handle all those defined by the GameEventHandler interface
-    // ...
-
     @Override
     public void help() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

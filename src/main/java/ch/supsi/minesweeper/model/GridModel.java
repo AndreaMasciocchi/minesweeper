@@ -1,5 +1,6 @@
 package ch.supsi.minesweeper.model;
 
+import ch.supsi.minesweeper.controller.UserPreferencesInterface;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -7,13 +8,14 @@ import java.util.Collections;
 
 public class GridModel {
     private final static int GRID_DIMENSION = 9;
+    private final static int MAX_BOMBS_NUMBER = 80;
     private static GridModel myself;
     @JsonProperty(required = true)
     private final int numberOfBombs;
     @JsonProperty(required = true)
     private int numberOfFlagsAvailable;
     private transient String feedback;
-    private final static UserPreferencesModel preferences = UserPreferencesModel.getInstance();
+    private final static UserPreferencesInterface preferences = UserPreferencesModel.getInstance();
 
     //TODO: see possibility of substitution with 'CellInterface' and adaptation of deserializer
     @JsonProperty(required = true)
@@ -44,7 +46,14 @@ public class GridModel {
 
     public static GridModel getInstance(){
         if(myself==null) {
-            int numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
+            int numberOfBombs;
+            try{
+                numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
+                if(numberOfBombs<=0 || numberOfBombs==MAX_BOMBS_NUMBER)
+                    throw new NumberFormatException();
+            }catch (NumberFormatException e){
+                numberOfBombs = Integer.parseInt(preferences.getDefaultPreferences("Mines"));
+            }
             myself = new GridModel(numberOfBombs);
         }
         return myself;
