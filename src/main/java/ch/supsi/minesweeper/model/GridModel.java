@@ -16,10 +16,8 @@ public class GridModel {
     private int numberOfFlagsAvailable;
     private transient String feedback;
     private final static UserPreferencesInterface preferences = UserPreferencesModel.getInstance();
-
-    //TODO: see possibility of substitution with 'CellInterface' and adaptation of deserializer
     @JsonProperty(required = true)
-    private final CellModel[][] grid = new CellModel[GRID_DIMENSION][GRID_DIMENSION];
+    private final Cell[][] grid = new Cell[GRID_DIMENSION][GRID_DIMENSION];
     private transient boolean bombTriggered = false;
 
     private GridModel(final int numberOfBombs){
@@ -112,7 +110,7 @@ public class GridModel {
     public void leftClick(int row, int column){
         if(!isCoordinatesValid(row,column))
             return;
-        CellModel cell = grid[row][column];
+        Cell cell = grid[row][column];
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
@@ -128,7 +126,7 @@ public class GridModel {
     public void rightClick(int row, int column){
         if(!isCoordinatesValid(row,column))
             return;
-        CellModel cell = grid[row][column];
+        Cell cell = grid[row][column];
         if(!cell.isCovered())
             return;
         if(cell.hasFlag()){

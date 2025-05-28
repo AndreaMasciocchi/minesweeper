@@ -1,21 +1,16 @@
 package ch.supsi.minesweeper.model;
 
-import ch.supsi.minesweeper.dataaccess.JsonPersistenceDAO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.*;
-import com.google.gson.stream.MalformedJsonException;
+import ch.supsi.minesweeper.Exceptions.FileProcessingException;
+import ch.supsi.minesweeper.Exceptions.FileSyntaxException;
+import ch.supsi.minesweeper.Exceptions.MalformedFileException;
+import ch.supsi.minesweeper.dataaccess.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler, GameInformationHandler{
     private static GameModel myself;
@@ -135,37 +130,20 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         String dir = fileDialog.getDirectory();
         File file = new File(dir+File.separator+fileName);
-        String json;
-        try(Scanner reader = new Scanner(file)){
-            StringBuilder sb = new StringBuilder();
-            while(reader.hasNextLine())
-                sb.append(reader.nextLine());
-            json = sb.toString();
-        }catch(FileNotFoundException e){
+        GridModel newGrid;
+        try {
+            newGrid = (GridModel) persistenceUtilities.deserialize(file, GridModel.class);
+        }catch (FileNotFoundException e){
             setUserFeedback("Aborted: an error occurred while reading the file");
             return;
-        }
-        Gson gson = new GsonBuilder().registerTypeAdapter(GridModel.class,(InstanceCreator<GridModel>) type -> GridModel.getInstance()).create();
-        try{
-            new JSONObject(json);
-        }catch (JSONException e){
-            setUserFeedback("Aborted: invalid file format");
-            return;
-        }
-        JsonValidator validator = new JsonValidator();
-        try{
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(json);
-            if(!validator.isJsonValid(jsonNode,validator.getJsonSchema(GridModel.class)))
-                throw new MalformedJsonException("");
-            grid = gson.fromJson(json, GridModel.class);
-        }catch(JsonSyntaxException | MalformedJsonException e){
+        }catch(FileSyntaxException | MalformedFileException e){
             setUserFeedback("Aborted: file corrupted");
             return;
-        } catch (JsonProcessingException e) {
-            setUserFeedback("Aborted: error parsing json");
+        }catch (FileProcessingException e){
+            setUserFeedback("Aborted: error parsing the file");
             return;
         }
+        grid = newGrid;
         setUserFeedback("Game loaded from "+dir+fileName);
         setGameSavable(false);
     }
