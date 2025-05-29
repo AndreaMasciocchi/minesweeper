@@ -19,10 +19,12 @@ public class GridModel {
     @JsonProperty(required = true)
     private final Cell[][] grid = new Cell[GRID_DIMENSION][GRID_DIMENSION];
     private transient boolean bombTriggered = false;
+    private int remainingCells;
 
     private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
         this.numberOfFlagsAvailable = numberOfBombs;
+        this.remainingCells = GRID_DIMENSION*GRID_DIMENSION;
 
         ArrayList<Boolean> bombsDistribution = new ArrayList<>();
         for(int i=0;i<numberOfBombs;i++)
@@ -121,6 +123,7 @@ public class GridModel {
             feedback = "You triggered a bomb! Game over!";
             bombTriggered = true;
         }
+        remainingCells--;
     }
 
     public void rightClick(int row, int column){
@@ -132,6 +135,7 @@ public class GridModel {
         if(cell.hasFlag()){
             cell.rightClick();
             numberOfFlagsAvailable++;
+            remainingCells++;
             feedback = "Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
             return;
         }
@@ -141,6 +145,11 @@ public class GridModel {
         }
         cell.rightClick();
         numberOfFlagsAvailable--;
+        remainingCells--;
         feedback = "Cell "+row+","+column+" flagged: "+numberOfFlagsAvailable+" flag(s) left";
+    }
+
+    public int getRemainingCells() {
+        return remainingCells;
     }
 }

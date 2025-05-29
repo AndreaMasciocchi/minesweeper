@@ -188,6 +188,17 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             setGameSavable(false);
             gameOver = true;
         }
+        if(grid.getRemainingCells()==0){
+            gameOver = true;
+            win();
+        }
+    }
+
+    private void win(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Victory");
+        alert.setHeaderText("You won!");
+        alert.setContentText("Use the 'new game' button to start again");
     }
 
     private void uncoverEmptyAdjacentCells(final int row, final int column){
