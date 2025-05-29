@@ -12,4 +12,6 @@ public interface GameEventHandler extends EventHandler {
 
     void open();
 
+    void quit();
+
 }

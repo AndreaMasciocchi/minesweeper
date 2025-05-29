@@ -42,15 +42,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
 
     @Override
     public void newGame() {
-        if(isGameSavable()){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Game not saved");
-            alert.setHeaderText("Are you sure you want to start a new game without saving the current one?");
-            alert.setContentText("All the progresses made in the current game will be definitively lost.");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.isPresent() && result.get()==ButtonType.CANCEL)
-                return;
-        }
+        if (askToSave("start a new game")) return;
         if(!isGameOver()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Start new game");
@@ -63,6 +55,19 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         grid = GridModel.getInstance();
         gameOver = false;
         setUserFeedback("New game started!");
+    }
+
+    private boolean askToSave(String action) {
+        if(isGameSavable()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Game not saved");
+            alert.setHeaderText("Are you sure you want to "+action+" without saving?");
+            alert.setContentText("All the progresses made in the current game will be definitively lost.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.isPresent() && result.get()==ButtonType.CANCEL)
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -102,15 +107,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
 
     @Override
     public void open() {
-        if(isGameSavable()){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Game not saved");
-            alert.setHeaderText("Are you sure you want to start a new game without saving the current one?");
-            alert.setContentText("All the progresses made in the current game will be definitively lost.");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.isPresent() && result.get()==ButtonType.CANCEL)
-                return;
-        }
+        if (askToSave("open a new game")) return;
         FileDialog fileDialog = new FileDialog(new Frame(),"Choose file",FileDialog.LOAD);
         fileDialog.setVisible(true);
         String fileName = fileDialog.getFile();
@@ -137,6 +134,13 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         setUserFeedback("Game loaded from "+dir+fileName);
         setGameSavable(false);
     }
+
+    @Override
+    public void quit() {
+        if(askToSave("quit")) return;
+        javafx.application.Platform.exit();
+    }
+
     private void setUserFeedback(String msg){
         feedback = msg;
     }

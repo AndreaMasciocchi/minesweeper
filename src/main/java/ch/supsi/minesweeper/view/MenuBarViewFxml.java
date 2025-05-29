@@ -82,6 +82,7 @@ public class MenuBarViewFxml implements ControlledFxView {
         this.saveAsMenuItem.setOnAction(event->this.gameEventHandler.saveAs());
 
         this.openMenuItem.setOnAction(event->this.gameEventHandler.open());
+        this.quitMenuItem.setOnAction(event->this.gameEventHandler.quit());
 
         this.newMenuItem.setOnAction(event->this.gameEventHandler.newGame());
 

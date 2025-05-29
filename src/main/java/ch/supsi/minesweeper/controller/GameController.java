@@ -52,4 +52,10 @@ public class GameController implements GameEventHandler{
         views.forEach(DataView::update);
     }
 
+    @Override
+    public void quit() {
+        handler.quit();
+        views.forEach(DataView::update);
+    }
+
 }
