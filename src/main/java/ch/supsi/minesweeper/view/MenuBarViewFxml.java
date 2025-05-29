@@ -1,10 +1,8 @@
 package ch.supsi.minesweeper.view;
 
+import ch.supsi.minesweeper.controller.AppInformationController;
 import ch.supsi.minesweeper.controller.EventHandler;
-import ch.supsi.minesweeper.model.AbstractModel;
-import ch.supsi.minesweeper.model.GameEventHandler;
-import ch.supsi.minesweeper.model.GameInformationHandler;
-import ch.supsi.minesweeper.model.GameModel;
+import ch.supsi.minesweeper.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -19,9 +17,9 @@ public class MenuBarViewFxml implements ControlledFxView {
     private static MenuBarViewFxml myself;
     private GameEventHandler gameEventHandler;
     private GameInformationHandler gameInformationHandler;
+    private final AppInformationHandler appInformationHandler = AppInformationController.getInstance();
     @FXML
     private MenuBar menuBar;
-
     @FXML
     private Menu fileMenu;
     @FXML
@@ -87,8 +85,8 @@ public class MenuBarViewFxml implements ControlledFxView {
 
         this.newMenuItem.setOnAction(event->this.gameEventHandler.newGame());
 
-        this.aboutMenuItem.setOnAction(actionEvent -> this.gameEventHandler.about());
-        this.helpMenuItem.setOnAction(actionEvent -> this.gameEventHandler.help());
+        this.aboutMenuItem.setOnAction(actionEvent -> this.appInformationHandler.about());
+        this.helpMenuItem.setOnAction(actionEvent -> this.appInformationHandler.help());
     }
 
     @Override

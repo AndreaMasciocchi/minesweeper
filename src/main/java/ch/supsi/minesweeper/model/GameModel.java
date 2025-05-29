@@ -101,16 +101,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     }
 
     @Override
-    public void help() {
-
-    }
-
-    @Override
-    public void about() {
-
-    }
-
-    @Override
     public void open() {
         if(isGameSavable()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
