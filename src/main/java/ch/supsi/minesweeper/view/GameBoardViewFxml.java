@@ -327,22 +327,30 @@ public class GameBoardViewFxml implements ControlledFxView {
         return this.containerPane;
     }
 
+    private void endGame(int dimension, Button button, boolean victory){
+        for(int i=0;i<dimension;i++){
+            for(int j=0;j<dimension;j++){
+                button = buttons.get(i*dimension+j);
+                button.setDisable(true);
+                if(gameInformationHandler.hasCellBomb(i,j)) {
+                    button.setText("\uD83D\uDCA3");
+                    button.setStyle("-fx-background-color: " + (victory ? "#00ff00" : "#ff0000"));
+                }
+            }
+        }
+        System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
+    }
+
     @Override
     public void update() {
         int dimension = gameInformationHandler.getGridDimension();
-        Button button;
+        Button button = null;
         if(gameInformationHandler.isGameOver()){
-            for(int i=0;i<dimension;i++){
-                for(int j=0;j<dimension;j++){
-                    button = buttons.get(i*dimension+j);
-                    button.setDisable(true);
-                    if(gameInformationHandler.hasCellBomb(i,j)) {
-                        button.setText("\uD83D\uDCA3");
-                        button.setStyle("-fx-background-color: #ff0000; ");
-                    }
-                }
-            }
-            System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
+            endGame(dimension, button, false);
+            return;
+        }
+        if (gameInformationHandler.isVictory()) {
+            endGame(dimension, button, true);
             return;
         }
         for(int i=0;i<dimension;i++){

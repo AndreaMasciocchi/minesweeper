@@ -8,5 +8,6 @@ public interface GameInformationHandler{
     int getNumberOfAdjacentBombs(final int row,final int column);
     boolean isCellFlagged(final int row,final int column);
     boolean isGameOver();
+    boolean isVictory();
     boolean isGameSavable();
 }

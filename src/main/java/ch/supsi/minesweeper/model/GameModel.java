@@ -18,6 +18,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     private final DataPersistenceInterface persistenceUtilities = JsonPersistenceDAO.getInstance();
     private String feedback;
     private boolean gameOver = false;
+    private boolean victory = false;
     private boolean gameSavable = false;
 
     private GameModel() {
@@ -43,14 +44,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     @Override
     public void newGame() {
         if (askToSave("start a new game")) return;
-        if(!isGameOver()){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Start new game");
-            alert.setHeaderText("Are you sure you want to start a new game?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.isPresent() && result.get()==ButtonType.CANCEL)
-                return;
-        }
         grid.reset();
         grid = GridModel.getInstance();
         gameOver = false;
@@ -175,6 +168,11 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         return b;
     }
     @Override
+    public boolean isVictory() {
+        return victory;
+    }
+
+    @Override
     public void move(int row,int column, boolean isLeftClick) {
         setGameSavable(true);
         if(isLeftClick) {
@@ -191,16 +189,9 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             gameOver = true;
         }
         if(grid.getRemainingCells()==0){
-            gameOver = true;
-            win();
+            victory = true;
+            setUserFeedback("You won!");
         }
-    }
-
-    private void win(){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Victory");
-        alert.setHeaderText("You won!");
-        alert.setContentText("Use the 'new game' button to start again");
     }
 
     private void uncoverEmptyAdjacentCells(final int row, final int column){
