@@ -166,7 +166,9 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     }
     @Override
     public boolean isGameOver(){
-        return gameOver;
+        boolean b = gameOver;
+        gameOver= false;
+        return b;
     }
     @Override
     public void move(int row,int column, boolean isLeftClick) {

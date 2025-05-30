@@ -114,7 +114,7 @@ public class GridModel {
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
-            feedback = "Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
+            feedback = "Removed flag at cell "+(row+1)+","+(column+1)+": "+numberOfFlagsAvailable+" are now available";
         }
         cell.leftClick();
         if(cell.hasBomb()){
@@ -132,7 +132,7 @@ public class GridModel {
         if(cell.hasFlag()){
             cell.rightClick();
             numberOfFlagsAvailable++;
-            feedback = "Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
+            feedback = "Removed flag at cell "+(row+1)+","+(column+1)+": "+numberOfFlagsAvailable+" are now available";
             return;
         }
         if(numberOfFlagsAvailable == 0){
@@ -141,6 +141,6 @@ public class GridModel {
         }
         cell.rightClick();
         numberOfFlagsAvailable--;
-        feedback = "Cell "+row+","+column+" flagged: "+numberOfFlagsAvailable+" flag(s) left";
+        feedback = "Cell "+(row+1)+","+(column+1)+" flagged: "+numberOfFlagsAvailable+" flag(s) left";
     }
 }
