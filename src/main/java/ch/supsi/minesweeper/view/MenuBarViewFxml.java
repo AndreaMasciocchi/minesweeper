@@ -2,6 +2,7 @@ package ch.supsi.minesweeper.view;
 
 import ch.supsi.minesweeper.controller.AppInformationController;
 import ch.supsi.minesweeper.controller.EventHandler;
+import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -44,6 +45,8 @@ public class MenuBarViewFxml implements ControlledFxView {
     @FXML
     private MenuItem helpMenuItem;
 
+    LanguageDAO language = LanguageDAO.getInstance();
+
     private MenuBarViewFxml() {}
 
     public static MenuBarViewFxml getInstance() {
@@ -69,6 +72,7 @@ public class MenuBarViewFxml implements ControlledFxView {
     @Override
     public void initialize(EventHandler eventHandler, AbstractModel model) {
         this.createBehaviour();
+        this.setLanguage();
         this.gameEventHandler = (GameEventHandler) eventHandler;
         this.gameInformationHandler = (GameModel) model;
     }
@@ -88,6 +92,26 @@ public class MenuBarViewFxml implements ControlledFxView {
 
         this.aboutMenuItem.setOnAction(actionEvent -> this.appInformationHandler.about());
         this.helpMenuItem.setOnAction(actionEvent -> this.appInformationHandler.help());
+    }
+
+    private void setLanguage() {
+        //File Menu
+        this.fileMenu.setText(language.getString("label.file"));
+        this.openMenuItem.setText(language.getString("label.file.open"));
+        this.newMenuItem.setText(language.getString("label.file.new"));
+        this.saveMenuItem.setText(language.getString("label.file.save"));
+        this.saveAsMenuItem.setText(language.getString("label.file.saveAs"));
+        this.quitMenuItem.setText(language.getString("label.file.quit"));
+
+        //Edit Menu
+        this.editMenu.setText(language.getString("label.edit"));
+        this.preferencesMenuItem.setText(language.getString("label.edit.preferences"));
+
+        //Help Menu
+        this.helpMenu.setText(language.getString("label.help"));
+        this.aboutMenuItem.setText(language.getString("label.about"));
+        this.helpMenuItem.setText(language.getString("label.help"));
+
     }
 
     @Override
