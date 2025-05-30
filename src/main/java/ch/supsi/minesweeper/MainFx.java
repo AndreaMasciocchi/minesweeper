@@ -1,10 +1,9 @@
 package ch.supsi.minesweeper;
 
+import ch.supsi.minesweeper.controller.AppInformationController;
+import ch.supsi.minesweeper.controller.GameBoardController;
 import ch.supsi.minesweeper.controller.GameController;
-import ch.supsi.minesweeper.model.AbstractModel;
-import ch.supsi.minesweeper.model.GameEventHandler;
-import ch.supsi.minesweeper.model.GameModel;
-import ch.supsi.minesweeper.model.PlayerEventHandler;
+import ch.supsi.minesweeper.model.*;
 import ch.supsi.minesweeper.view.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -35,13 +34,14 @@ public class MainFx extends Application {
 
         // CONTROLLERS
         this.gameEventHandler = GameController.getInstance();
-        this.playerEventHandler = GameController.getInstance();
+        this.playerEventHandler = GameBoardController.getInstance();
 
         // SCAFFOLDING of M-V-C
         this.menuBarView.initialize(this.gameEventHandler, this.gameModel);
         this.gameBoardView.initialize(this.playerEventHandler, this.gameModel);
         this.userFeedbackView.initialize(this.gameModel);
         GameController.getInstance().initialize(List.of(this.menuBarView, this.gameBoardView, this.userFeedbackView));
+        GameBoardController.getInstance().initialize(List.of(this.menuBarView, this.gameBoardView, this.userFeedbackView));
     }
 
     @Override
@@ -57,6 +57,7 @@ public class MainFx extends Application {
                     // quit the app
                     // replace this hard close
                     // by delegating the work to a suitable controller
+                    gameEventHandler.quit();
                     primaryStage.close();
                 }
         );

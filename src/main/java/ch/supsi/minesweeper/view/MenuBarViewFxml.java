@@ -1,10 +1,8 @@
 package ch.supsi.minesweeper.view;
 
+import ch.supsi.minesweeper.controller.AppInformationController;
 import ch.supsi.minesweeper.controller.EventHandler;
-import ch.supsi.minesweeper.dataaccess.LanguageDAO;
-import ch.supsi.minesweeper.model.AbstractModel;
-import ch.supsi.minesweeper.model.GameEventHandler;
-import ch.supsi.minesweeper.model.GameModel;
+import ch.supsi.minesweeper.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -16,15 +14,12 @@ import java.io.IOException;
 import java.net.URL;
 
 public class MenuBarViewFxml implements ControlledFxView {
-
     private static MenuBarViewFxml myself;
-
     private GameEventHandler gameEventHandler;
-    private GameModel gameModel;
-
+    private GameInformationHandler gameInformationHandler;
+    private final AppInformationHandler appInformationHandler = AppInformationController.getInstance();
     @FXML
     private MenuBar menuBar;
-
     @FXML
     private Menu fileMenu;
     @FXML
@@ -48,8 +43,6 @@ public class MenuBarViewFxml implements ControlledFxView {
     private MenuItem aboutMenuItem;
     @FXML
     private MenuItem helpMenuItem;
-
-    private LanguageDAO language = LanguageDAO.getInstance();
 
     private MenuBarViewFxml() {}
 
@@ -77,8 +70,7 @@ public class MenuBarViewFxml implements ControlledFxView {
     public void initialize(EventHandler eventHandler, AbstractModel model) {
         this.createBehaviour();
         this.gameEventHandler = (GameEventHandler) eventHandler;
-        this.gameModel = (GameModel) model;
-        this.setLanguage();
+        this.gameInformationHandler = (GameModel) model;
     }
 
     private void createBehaviour() {
@@ -89,34 +81,13 @@ public class MenuBarViewFxml implements ControlledFxView {
         this.saveMenuItem.setOnAction(event -> this.gameEventHandler.save());
         this.saveAsMenuItem.setOnAction(event->this.gameEventHandler.saveAs());
 
-        //Open
-        this.openMenuItem.setOnAction(event->this.gameEventHandler.open(this.isSaveDisabled()));
-        // add event handlers for all necessary menu items
-        // ...
+        this.openMenuItem.setOnAction(event->this.gameEventHandler.open());
+        this.quitMenuItem.setOnAction(event->this.gameEventHandler.quit());
 
-        //about
-        this.aboutMenuItem.setOnAction(actionEvent -> this.gameEventHandler.about());
-        this.helpMenuItem.setOnAction(actionEvent -> this.gameEventHandler.help());
-    }
+        this.newMenuItem.setOnAction(event->this.gameEventHandler.newGame());
 
-    private void setLanguage() {
-        //File Menu
-        this.fileMenu.setText(language.getString("label.file"));
-        this.openMenuItem.setText(language.getString("label.file.open"));
-        this.newMenuItem.setText(language.getString("label.file.new"));
-        this.saveMenuItem.setText(language.getString("label.file.save"));
-        this.saveAsMenuItem.setText(language.getString("label.file.saveAs"));
-        this.quitMenuItem.setText(language.getString("label.file.quit"));
-
-        //Edit Menu
-        this.editMenu.setText(language.getString("label.edit"));
-        this.preferencesMenuItem.setText(language.getString("label.edit.preferences"));
-
-        //Help Menu
-        this.helpMenu.setText(language.getString("label.help"));
-        this.aboutMenuItem.setText(language.getString("label.help.about"));
-        this.helpMenuItem.setText(language.getString("label.help"));
-
+        this.aboutMenuItem.setOnAction(actionEvent -> this.appInformationHandler.about());
+        this.helpMenuItem.setOnAction(actionEvent -> this.appInformationHandler.help());
     }
 
     @Override
@@ -126,23 +97,9 @@ public class MenuBarViewFxml implements ControlledFxView {
 
     @Override
     public void update() {
-        // get your data from the model, if needed
-        // then update this view here
+        this.saveMenuItem.setDisable(!gameInformationHandler.isGameSavable());
+        this.saveAsMenuItem.setDisable(!gameInformationHandler.isGameSavable());
         System.out.println(this.getClass().getSimpleName() + " updated..." + System.currentTimeMillis());
-    }
-
-    public void enableSave(){
-        this.saveMenuItem.setDisable(false);
-        this.saveAsMenuItem.setDisable(false);
-    }
-
-    public void disableSave(){
-        this.saveMenuItem.setDisable(true);
-        this.saveAsMenuItem.setDisable(true);
-    }
-
-    public boolean isSaveDisabled(){
-        return this.saveMenuItem.isDisable();
     }
 
 }

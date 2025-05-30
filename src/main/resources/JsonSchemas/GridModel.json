@@ -1,0 +1,51 @@
+{
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "type" : "object",
+  "properties" : {
+    "grid": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "CLASSNAME": {
+              "type": "string"
+            },
+            "DATA": {
+              "type": "object",
+              "properties": {
+                "hasBomb": {
+                  "type": "boolean"
+                },
+                "hasFlag": {
+                  "type": "boolean"
+                },
+                "isCovered": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "hasBomb",
+                "hasFlag",
+                "isCovered"
+              ]
+            }
+          },
+          "required": [
+            "CLASSNAME",
+            "DATA"
+          ]
+        }
+      }
+    },
+    "numberOfBombs" : {
+      "type" : "integer"
+    },
+    "numberOfFlagsAvailable" : {
+      "type" : "integer"
+    }
+  },
+  "required": ["grid","numberOfBombs","numberOfFlagsAvailable"],
+  "additionalProperties":false
+}

@@ -1,30 +1,25 @@
 package ch.supsi.minesweeper.model;
 
-import ch.supsi.minesweeper.dataaccess.SaveGameDAO;
-import ch.supsi.minesweeper.view.GameBoardViewFxml;
-import ch.supsi.minesweeper.view.MenuBarViewFxml;
-import ch.supsi.minesweeper.view.UserFeedbackViewFxml;
-import com.google.gson.*;
+import ch.supsi.minesweeper.Exceptions.FileProcessingException;
+import ch.supsi.minesweeper.Exceptions.FileSyntaxException;
+import ch.supsi.minesweeper.Exceptions.MalformedFileException;
+import ch.supsi.minesweeper.dataaccess.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Optional;
-import java.util.Scanner;
 
-public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler{
-
+public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler, GameInformationHandler{
     private static GameModel myself;
     private GridModel grid = GridModel.getInstance();
-    private final SaveGameDAO persistenceUtilities = SaveGameDAO.getInstance();
-    private final GameBoardViewFxml boardView = GameBoardViewFxml.getInstance();
-    private final UserFeedbackViewFxml feedbackView = UserFeedbackViewFxml.getInstance();
-    private final MenuBarViewFxml menuView = MenuBarViewFxml.getInstance();
+    private final DataPersistenceInterface persistenceUtilities = JsonPersistenceDAO.getInstance();
     private String feedback;
+    private boolean gameOver = false;
+    private boolean victory = false;
+    private boolean gameSavable = false;
 
     private GameModel() {
         super();
@@ -38,9 +33,33 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         return myself;
     }
 
+    private void setGameSavable(final boolean flag){
+        gameSavable = flag;
+    }
+
+    public boolean isGameSavable(){
+        return gameSavable;
+    }
+
     @Override
     public void newGame() {
+        if (askToSave("start a new game")) return;
+        grid.reset();
+        grid = GridModel.getInstance();
+        gameOver = false;
+        setUserFeedback("New game started!");
+    }
 
+    private boolean askToSave(String action) {
+        if(isGameSavable()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Game not saved");
+            alert.setHeaderText("Are you sure you want to "+action+" without saving?");
+            alert.setContentText("All the progresses made in the current game will be definitively lost.");
+            Optional<ButtonType> result = alert.showAndWait();
+            return result.isPresent() && result.get() == ButtonType.CANCEL;
+        }
+        return false;
     }
 
     @Override
@@ -49,12 +68,10 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             persistenceUtilities.persist(grid);
         } catch (FileNotFoundException e) {
             setUserFeedback("Aborted: an error occurred while saving the game");
-            feedbackView.update();
             return;
         }
         setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
-        feedbackView.update();
-        menuView.disableSave();
+        setGameSavable(false);
     }
 
     @Override
@@ -64,7 +81,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         String directory = fileDialog.getDirectory();
         if(directory==null){
             setUserFeedback("Aborted: game not saved");
-            feedbackView.update();
             return;
         }
         String name = fileDialog.getFile();
@@ -75,110 +91,120 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             persistenceUtilities.persist(grid,file);
         } catch (FileNotFoundException e) {
             setUserFeedback("Aborted: an error occurred while saving the game");
-            feedbackView.update();
             return;
         }
         setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
-        feedbackView.update();
-        menuView.disableSave();
+        setGameSavable(false);
     }
 
     @Override
-    public void help() {
-
-    }
-
-    @Override
-    public void about() {
-
-    }
-
-    @Override
-    public void open(final boolean isGameSaved) {
-        if(!isGameSaved){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Game not saved");
-            alert.setHeaderText("Are you sure you want to start a new game without saving the current one?");
-            alert.setContentText("All the progresses made in the current game will be definitively lost.");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.isPresent() && result.get()==ButtonType.CANCEL)
-                return;
-        }
+    public void open() {
+        if (askToSave("open a new game")) return;
         FileDialog fileDialog = new FileDialog(new Frame(),"Choose file",FileDialog.LOAD);
         fileDialog.setVisible(true);
         String fileName = fileDialog.getFile();
         if(fileName==null){
             setUserFeedback("Aborted: no game loaded");
-            feedbackView.update();
             return;
         }
         String dir = fileDialog.getDirectory();
         File file = new File(dir+File.separator+fileName);
-        String json;
-        try(Scanner reader = new Scanner(file)){
-            StringBuilder sb = new StringBuilder();
-            while(reader.hasNextLine())
-                sb.append(reader.nextLine());
-            json = sb.toString();
-        }catch(FileNotFoundException e){
+        GridModel newGrid;
+        try {
+            newGrid = (GridModel) persistenceUtilities.deserialize(file, GridModel.class);
+        }catch (FileNotFoundException e){
             setUserFeedback("Aborted: an error occurred while reading the file");
-            feedbackView.update();
             return;
-        }
-        Gson gson = new GsonBuilder().registerTypeAdapter(GridModel.class,(InstanceCreator<GridModel>) type -> GridModel.getInstance()).create();
-        try{
-            new JSONObject(json);
-        }catch (JSONException e){
-            setUserFeedback("Aborted: invalid file format");
-            feedbackView.update();
-            return;
-        }
-        try{
-            grid = gson.fromJson(json, GridModel.class);
-        }catch(JsonSyntaxException e){
+        }catch(FileSyntaxException | MalformedFileException e){
             setUserFeedback("Aborted: file corrupted");
-            feedbackView.update();
+            return;
+        }catch (FileProcessingException e){
+            setUserFeedback("Aborted: error parsing the file");
             return;
         }
+        grid = newGrid;
         setUserFeedback("Game loaded from "+dir+fileName);
-        feedbackView.update();
-        menuView.disableSave();
+        setGameSavable(false);
+    }
+
+    @Override
+    public void quit() {
+        if(askToSave("quit")) return;
+        javafx.application.Platform.exit();
     }
 
     private void setUserFeedback(String msg){
         feedback = msg;
     }
+    @Override
     public String getUserFeedback(){
         return feedback;
     }
+    @Override
     public int getGridDimension(){
         return grid.getGridDimension();
     }
+    @Override
     public boolean isCellCovered(int row,int column){
         return grid.isCellCovered(row,column);
     }
+    @Override
     public boolean hasCellBomb(int row, int column){
         return grid.hasCellBomb(row,column);
     }
+    @Override
     public int getNumberOfAdjacentBombs(int row,int column){
         return grid.getNumberOfAdjacentBombs(row,column);
     }
+    @Override
     public boolean isCellFlagged(int row,int column){
         return grid.isCellFlagged(row,column);
     }
     @Override
+    public boolean isGameOver(){
+        boolean b = gameOver;
+        gameOver= false;
+        return b;
+    }
+    @Override
+    public boolean isVictory() {
+        return victory;
+    }
+
+    @Override
     public void move(int row,int column, boolean isLeftClick) {
-        menuView.enableSave();
-        if(isLeftClick)
-            grid.leftClick(row,column);
+        setGameSavable(true);
+        if(isLeftClick) {
+            grid.leftClick(row, column);
+            if (getNumberOfAdjacentBombs(row,column)==0) {
+                uncoverEmptyAdjacentCells(row,column);
+            }
+        }
         else
             grid.rightClick(row,column);
         setUserFeedback(grid.getFeedback());
-        boardView.updateCell(row,column);
-        feedbackView.update();
+        if(grid.isBombTriggered()) {
+            setGameSavable(false);
+            gameOver = true;
+        }
+        if(grid.getRemainingCells()==0){
+            victory = true;
+            setUserFeedback("You won!");
+        }
     }
 
-    // add all the relevant missing behaviours
-    // ...
-
+    private void uncoverEmptyAdjacentCells(final int row, final int column){
+        if(isCellCovered(row-1,column) && getNumberOfAdjacentBombs(row-1,column)==0)
+            move(row-1,column,true);
+        if(isCellCovered(row,column-1) && getNumberOfAdjacentBombs(row,column-1)==0)
+            move(row,column-1,true);
+        if(isCellCovered(row-1,column-1) && getNumberOfAdjacentBombs(row-1,column-1)==0)
+            move(row-1,column-1,true);
+        if(isCellCovered(row+1,column) && getNumberOfAdjacentBombs(row+1,column)==0)
+            move(row+1,column,true);
+        if(isCellCovered(row,column+1) && getNumberOfAdjacentBombs(row,column+1)==0)
+            move(row,column+1,true);
+        if(isCellCovered(row+1,column+1) && getNumberOfAdjacentBombs(row+1,column+1)==0)
+            move(row+1,column+1,true);
+    }
 }

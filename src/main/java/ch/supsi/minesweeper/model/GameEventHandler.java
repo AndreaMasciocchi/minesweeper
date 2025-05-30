@@ -10,13 +10,8 @@ public interface GameEventHandler extends EventHandler {
 
     void saveAs();
 
-    void help();
+    void open();
 
-    void about();
-
-    void open(final boolean isGameSaved);
-
-    // add all the relevant missing behaviours
-    // ...
+    void quit();
 
 }

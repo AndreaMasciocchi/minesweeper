@@ -1,6 +1,6 @@
 package ch.supsi.minesweeper.model;
 
-public class CellModel implements CellEventHandler{
+public class CellModel implements Cell {
     private final boolean hasBomb;
     private boolean hasFlag = false;
     private boolean isCovered = true;
@@ -9,14 +9,17 @@ public class CellModel implements CellEventHandler{
         hasBomb = bomb;
     }
 
+    @Override
     public boolean isCovered(){
         return isCovered;
     }
 
+    @Override
     public boolean hasFlag(){
         return hasFlag;
     }
 
+    @Override
     public boolean hasBomb() {
         return hasBomb;
     }

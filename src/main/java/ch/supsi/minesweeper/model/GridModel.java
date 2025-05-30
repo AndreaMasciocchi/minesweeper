@@ -1,20 +1,30 @@
 package ch.supsi.minesweeper.model;
 
+import ch.supsi.minesweeper.controller.UserPreferencesInterface;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class GridModel {
     private final static int GRID_DIMENSION = 9;
+    private final static int MAX_BOMBS_NUMBER = 80;
     private static GridModel myself;
+    @JsonProperty(required = true)
     private final int numberOfBombs;
+    @JsonProperty(required = true)
     private int numberOfFlagsAvailable;
     private transient String feedback;
-    private final static UserPreferencesModel preferences = UserPreferencesModel.getInstance();
-    private final CellModel[][] grid = new CellModel[GRID_DIMENSION][GRID_DIMENSION];
+    private final static UserPreferencesInterface preferences = UserPreferencesModel.getInstance();
+    @JsonProperty(required = true)
+    private final Cell[][] grid = new Cell[GRID_DIMENSION][GRID_DIMENSION];
+    private transient boolean bombTriggered = false;
+    private int remainingCells;
 
     private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
         this.numberOfFlagsAvailable = numberOfBombs;
+        this.remainingCells = GRID_DIMENSION*GRID_DIMENSION;
 
         ArrayList<Boolean> bombsDistribution = new ArrayList<>();
         for(int i=0;i<numberOfBombs;i++)
@@ -36,10 +46,20 @@ public class GridModel {
 
     public static GridModel getInstance(){
         if(myself==null) {
-            int numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
+            int numberOfBombs;
+            try{
+                numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
+                if(numberOfBombs<=0 || numberOfBombs==MAX_BOMBS_NUMBER)
+                    throw new NumberFormatException();
+            }catch (NumberFormatException e){
+                numberOfBombs = Integer.parseInt(preferences.getDefaultPreferences("Mines"));
+            }
             myself = new GridModel(numberOfBombs);
         }
         return myself;
+    }
+    public void reset(){
+        myself = new GridModel(numberOfBombs);
     }
     public int getGridDimension(){
         return GRID_DIMENSION;
@@ -56,6 +76,11 @@ public class GridModel {
         if(!isCoordinatesValid(row,column))
             return false;
         return grid[row][column].hasBomb();
+    }
+    public boolean isBombTriggered(){
+        boolean triggered = bombTriggered;
+        bombTriggered = false;
+        return triggered;
     }
     public boolean isCellFlagged(int row,int column){
         if(!isCoordinatesValid(row,column))
@@ -87,7 +112,7 @@ public class GridModel {
     public void leftClick(int row, int column){
         if(!isCoordinatesValid(row,column))
             return;
-        CellModel cell = grid[row][column];
+        Cell cell = grid[row][column];
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
@@ -96,18 +121,21 @@ public class GridModel {
         cell.leftClick();
         if(cell.hasBomb()){
             feedback = "You triggered a bomb! Game over!";
+            bombTriggered = true;
         }
+        remainingCells--;
     }
 
     public void rightClick(int row, int column){
         if(!isCoordinatesValid(row,column))
             return;
-        CellModel cell = grid[row][column];
+        Cell cell = grid[row][column];
         if(!cell.isCovered())
             return;
         if(cell.hasFlag()){
             cell.rightClick();
             numberOfFlagsAvailable++;
+            remainingCells++;
             feedback = "Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
             return;
         }
@@ -117,6 +145,11 @@ public class GridModel {
         }
         cell.rightClick();
         numberOfFlagsAvailable--;
+        remainingCells--;
         feedback = "Cell "+row+","+column+" flagged: "+numberOfFlagsAvailable+" flag(s) left";
+    }
+
+    public int getRemainingCells() {
+        return remainingCells;
     }
 }

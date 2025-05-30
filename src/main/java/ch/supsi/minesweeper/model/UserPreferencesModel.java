@@ -32,6 +32,12 @@ public class UserPreferencesModel implements UserPreferencesInterface {
 
         return userPereferences.getProperty(key);
     }
+    @Override
+    public String getDefaultPreferences(String key){
+        if (key == null || key.isEmpty())
+            return null;
+        return preferencesDao.getDefaultPreferences().getProperty(key);
+    }
 
     @Override
     public void setPreferences(String key, String value) {
