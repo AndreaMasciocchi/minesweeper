@@ -57,6 +57,7 @@ public class MainFx extends Application {
                     // quit the app
                     // replace this hard close
                     // by delegating the work to a suitable controller
+                    gameEventHandler.quit();
                     primaryStage.close();
                 }
         );
