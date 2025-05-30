@@ -1,0 +1,214 @@
+package ch.supsi.minesweeper.model;
+
+import ch.supsi.minesweeper.Exceptions.FileProcessingException;
+import ch.supsi.minesweeper.Exceptions.FileSyntaxException;
+import ch.supsi.minesweeper.Exceptions.MalformedFileException;
+import ch.supsi.minesweeper.dataaccess.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Optional;
+
+public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler, GameInformationHandler{
+    private static GameModel myself;
+    private GridModel grid = GridModel.getInstance();
+    private final DataPersistenceInterface persistenceUtilities = JsonPersistenceDAO.getInstance();
+    private String feedback;
+    private boolean gameOver = false;
+    private boolean victory = false;
+    private boolean gameSavable = false;
+
+    private LanguageDAO language = LanguageDAO.getInstance();
+
+    private GameModel() {
+        super();
+    }
+
+    public static GameModel getInstance() {
+        if (myself == null) {
+            myself = new GameModel();
+        }
+
+        return myself;
+    }
+
+    private void setGameSavable(final boolean flag){
+        gameSavable = flag;
+    }
+
+    public boolean isGameSavable(){
+        return gameSavable;
+    }
+
+    @Override
+    public void newGame() {
+        if (askToSave(language.getString("label.newgame.ask"))) return;
+        grid.reset();
+        grid = GridModel.getInstance();
+        gameOver = false;
+        setUserFeedback(language.getString("label.newgame.feedback"));
+    }
+
+    private boolean askToSave(String action) {
+        if(isGameSavable()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(language.getString("label.askToSave.title"));
+            alert.setHeaderText(language.getString("label.askToSave.header").replace("_", action));
+            alert.setContentText(language.getString("label.askToSave.content"));
+            Optional<ButtonType> result = alert.showAndWait();
+            return result.isPresent() && result.get() == ButtonType.CANCEL;
+        }
+        return false;
+    }
+
+    @Override
+    public void save() {
+        try {
+            persistenceUtilities.persist(grid);
+        } catch (FileNotFoundException e) {
+            setUserFeedback(language.getString("label.save.err1"));
+            return;
+        }
+        setUserFeedback(language.getString("label.save")+" "+persistenceUtilities.getLastSavedFileAbsolutePath());
+        setGameSavable(false);
+    }
+
+    @Override
+    public void saveAs() {
+        FileDialog fileDialog = new FileDialog(new Frame(),language.getString("label.file.saveAs"),FileDialog.SAVE);
+        fileDialog.setVisible(true);
+        String directory = fileDialog.getDirectory();
+        if(directory==null){
+            setUserFeedback(language.getString("label.save.err2"));
+            return;
+        }
+        String name = fileDialog.getFile();
+        File file = new File(directory+File.separator+name);
+        if(!file.exists() && !name.endsWith(".json"))
+            file = new File(directory+File.separator+name+".json");
+        try {
+            persistenceUtilities.persist(grid,file);
+        } catch (FileNotFoundException e) {
+            setUserFeedback(language.getString("label.save.err1"));
+            return;
+        }
+        setUserFeedback(language.getString("label.save")+" "+persistenceUtilities.getLastSavedFileAbsolutePath());
+        setGameSavable(false);
+    }
+
+    @Override
+    public void open() {
+        if (askToSave(language.getString("label.open.opengame"))) return;
+        FileDialog fileDialog = new FileDialog(new Frame(),language.getString("label.open.choosefile"),FileDialog.LOAD);
+        fileDialog.setVisible(true);
+        String fileName = fileDialog.getFile();
+        if(fileName==null){
+            setUserFeedback(language.getString("label.open.err1"));
+            return;
+        }
+        String dir = fileDialog.getDirectory();
+        File file = new File(dir+File.separator+fileName);
+        GridModel newGrid;
+        try {
+            newGrid = (GridModel) persistenceUtilities.deserialize(file, GridModel.class);
+        }catch (FileNotFoundException e){
+            setUserFeedback(language.getString("label.open.err2"));
+            return;
+        }catch(FileSyntaxException | MalformedFileException e){
+            setUserFeedback(language.getString("label.open.err3"));
+            return;
+        }catch (FileProcessingException e){
+            setUserFeedback(language.getString("label.open.err4"));
+            return;
+        }
+        grid = newGrid;
+
+        setGameSavable(false);
+    }
+
+    @Override
+    public void quit() {
+        if(askToSave(language.getString("label.askToSave.quit"))) return;
+        javafx.application.Platform.exit();
+    }
+
+    private void setUserFeedback(String msg){
+        feedback = msg;
+    }
+
+    @Override
+    public String getUserFeedback() {
+        return feedback;
+    }
+
+    @Override
+    public int getGridDimension(){
+        return grid.getGridDimension();
+    }
+    @Override
+    public boolean isCellCovered(int row,int column){
+        return grid.isCellCovered(row,column);
+    }
+    @Override
+    public boolean hasCellBomb(int row, int column){
+        return grid.hasCellBomb(row,column);
+    }
+    @Override
+    public int getNumberOfAdjacentBombs(int row,int column){
+        return grid.getNumberOfAdjacentBombs(row,column);
+    }
+    @Override
+    public boolean isCellFlagged(int row,int column){
+        return grid.isCellFlagged(row,column);
+    }
+    @Override
+    public boolean isGameOver(){
+        boolean b = gameOver;
+        gameOver= false;
+        return b;
+    }
+    @Override
+    public boolean isVictory() {
+        return victory;
+    }
+
+    @Override
+    public void move(int row,int column, boolean isLeftClick) {
+        setGameSavable(true);
+        if(isLeftClick) {
+            grid.leftClick(row, column);
+            if (getNumberOfAdjacentBombs(row,column)==0) {
+                uncoverEmptyAdjacentCells(row,column);
+            }
+        }
+        else
+            grid.rightClick(row,column);
+        setUserFeedback(grid.getFeedback());
+        if(grid.isBombTriggered()) {
+            setGameSavable(false);
+            gameOver = true;
+        }
+        if(grid.getRemainingCells()==0){
+            victory = true;
+            setUserFeedback(language.getString("label.win"));
+        }
+    }
+
+    private void uncoverEmptyAdjacentCells(final int row, final int column){
+        if(isCellCovered(row-1,column) && getNumberOfAdjacentBombs(row-1,column)==0)
+            move(row-1,column,true);
+        if(isCellCovered(row,column-1) && getNumberOfAdjacentBombs(row,column-1)==0)
+            move(row,column-1,true);
+        if(isCellCovered(row-1,column-1) && getNumberOfAdjacentBombs(row-1,column-1)==0)
+            move(row-1,column-1,true);
+        if(isCellCovered(row+1,column) && getNumberOfAdjacentBombs(row+1,column)==0)
+            move(row+1,column,true);
+        if(isCellCovered(row,column+1) && getNumberOfAdjacentBombs(row,column+1)==0)
+            move(row,column+1,true);
+        if(isCellCovered(row+1,column+1) && getNumberOfAdjacentBombs(row+1,column+1)==0)
+            move(row+1,column+1,true);
+    }
+}
