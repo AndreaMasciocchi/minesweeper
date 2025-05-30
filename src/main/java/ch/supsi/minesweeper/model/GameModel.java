@@ -57,8 +57,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             alert.setHeaderText("Are you sure you want to "+action+" without saving?");
             alert.setContentText("All the progresses made in the current game will be definitively lost.");
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.isPresent() && result.get()==ButtonType.CANCEL)
-                return true;
+            return result.isPresent() && result.get() == ButtonType.CANCEL;
         }
         return false;
     }
