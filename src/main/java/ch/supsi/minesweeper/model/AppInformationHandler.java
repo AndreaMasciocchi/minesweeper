@@ -4,4 +4,5 @@ public interface AppInformationHandler {
     void help();
 
     void about();
+    void preferences();
 }

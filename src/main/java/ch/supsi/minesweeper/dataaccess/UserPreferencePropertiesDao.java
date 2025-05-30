@@ -47,7 +47,8 @@ public class UserPreferencePropertiesDao implements PreferencesDataAccessInterfa
         return null;
     }
 
-    private Path getUserPreferencesFilePath() {
+    @Override
+    public Path getUserPreferencesFilePath() {
         return Path.of(userHomeDirectory, preferencesDirectory, preferencesFile);
     }
 
