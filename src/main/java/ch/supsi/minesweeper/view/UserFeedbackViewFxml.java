@@ -1,5 +1,6 @@
 package ch.supsi.minesweeper.view;
 
+import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.AbstractModel;
 import ch.supsi.minesweeper.model.GameInformationHandler;
 import ch.supsi.minesweeper.model.GameModel;
@@ -19,6 +20,7 @@ public class UserFeedbackViewFxml implements UncontrolledFxView {
     private ScrollPane containerPane;
     @FXML
     private Text userFeedbackBar;
+    private LanguageDAO language = LanguageDAO.getInstance();
     private UserFeedbackViewFxml() {}
 
     public static UserFeedbackViewFxml getInstance() {
@@ -37,13 +39,13 @@ public class UserFeedbackViewFxml implements UncontrolledFxView {
                 throw new RuntimeException(e);
             }
         }
-
         return myself;
     }
 
     @Override
     public void initialize(AbstractModel model) {
         this.gameInformationHandler = (GameModel) model;
+        this.userFeedbackBar.setText(language.getString("label.userfeedbackbar.default"));
     }
 
     @Override

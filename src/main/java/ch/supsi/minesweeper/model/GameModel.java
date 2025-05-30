@@ -21,6 +21,8 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     private boolean victory = false;
     private boolean gameSavable = false;
 
+    private LanguageDAO language = LanguageDAO.getInstance();
+
     private GameModel() {
         super();
     }
@@ -43,19 +45,19 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
 
     @Override
     public void newGame() {
-        if (askToSave("start a new game")) return;
+        if (askToSave(language.getString("label.newgame.ask"))) return;
         grid.reset();
         grid = GridModel.getInstance();
         gameOver = false;
-        setUserFeedback("New game started!");
+        setUserFeedback(language.getString("label.newgame.feedback"));
     }
 
     private boolean askToSave(String action) {
         if(isGameSavable()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Game not saved");
-            alert.setHeaderText("Are you sure you want to "+action+" without saving?");
-            alert.setContentText("All the progresses made in the current game will be definitively lost.");
+            alert.setTitle(language.getString("label.askToSave.title"));
+            alert.setHeaderText(language.getString("label.askToSave.header").replace("_", action));
+            alert.setContentText(language.getString("label.askToSave.content"));
             Optional<ButtonType> result = alert.showAndWait();
             return result.isPresent() && result.get() == ButtonType.CANCEL;
         }
@@ -67,20 +69,20 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         try {
             persistenceUtilities.persist(grid);
         } catch (FileNotFoundException e) {
-            setUserFeedback("Aborted: an error occurred while saving the game");
+            setUserFeedback(language.getString("label.save.err1"));
             return;
         }
-        setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
+        setUserFeedback(language.getString("label.save")+" "+persistenceUtilities.getLastSavedFileAbsolutePath());
         setGameSavable(false);
     }
 
     @Override
     public void saveAs() {
-        FileDialog fileDialog = new FileDialog(new Frame(),"Save as",FileDialog.SAVE);
+        FileDialog fileDialog = new FileDialog(new Frame(),language.getString("label.file.saveAs"),FileDialog.SAVE);
         fileDialog.setVisible(true);
         String directory = fileDialog.getDirectory();
         if(directory==null){
-            setUserFeedback("Aborted: game not saved");
+            setUserFeedback(language.getString("label.save.err2"));
             return;
         }
         String name = fileDialog.getFile();
@@ -90,21 +92,21 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         try {
             persistenceUtilities.persist(grid,file);
         } catch (FileNotFoundException e) {
-            setUserFeedback("Aborted: an error occurred while saving the game");
+            setUserFeedback(language.getString("label.save.err1"));
             return;
         }
-        setUserFeedback("Game saved to "+persistenceUtilities.getLastSavedFileAbsolutePath());
+        setUserFeedback(language.getString("label.save")+" "+persistenceUtilities.getLastSavedFileAbsolutePath());
         setGameSavable(false);
     }
 
     @Override
     public void open() {
-        if (askToSave("open a new game")) return;
-        FileDialog fileDialog = new FileDialog(new Frame(),"Choose file",FileDialog.LOAD);
+        if (askToSave(language.getString("label.open.opengame"))) return;
+        FileDialog fileDialog = new FileDialog(new Frame(),language.getString("label.open.choosefile"),FileDialog.LOAD);
         fileDialog.setVisible(true);
         String fileName = fileDialog.getFile();
         if(fileName==null){
-            setUserFeedback("Aborted: no game loaded");
+            setUserFeedback(language.getString("label.open.err1"));
             return;
         }
         String dir = fileDialog.getDirectory();
@@ -113,23 +115,23 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         try {
             newGrid = (GridModel) persistenceUtilities.deserialize(file, GridModel.class);
         }catch (FileNotFoundException e){
-            setUserFeedback("Aborted: an error occurred while reading the file");
+            setUserFeedback(language.getString("label.open.err2"));
             return;
         }catch(FileSyntaxException | MalformedFileException e){
-            setUserFeedback("Aborted: file corrupted");
+            setUserFeedback(language.getString("label.open.err3"));
             return;
         }catch (FileProcessingException e){
-            setUserFeedback("Aborted: error parsing the file");
+            setUserFeedback(language.getString("label.open.err4"));
             return;
         }
         grid = newGrid;
-        setUserFeedback("Game loaded from "+dir+fileName);
+        setUserFeedback(language.getString("label.open.loaded")+" "+dir+fileName);
         setGameSavable(false);
     }
 
     @Override
     public void quit() {
-        if(askToSave("quit")) return;
+        if(askToSave(language.getString("label.askToSave.quit"))) return;
         javafx.application.Platform.exit();
     }
 
@@ -189,7 +191,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         if(grid.getRemainingCells()==0){
             victory = true;
-            setUserFeedback("You won!");
+            setUserFeedback(language.getString("label.win"));
         }
     }
 

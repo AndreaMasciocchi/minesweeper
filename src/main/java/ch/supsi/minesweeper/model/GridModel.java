@@ -1,6 +1,7 @@
 package ch.supsi.minesweeper.model;
 
 import ch.supsi.minesweeper.controller.UserPreferencesInterface;
+import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class GridModel {
     private final Cell[][] grid = new Cell[GRID_DIMENSION][GRID_DIMENSION];
     private transient boolean bombTriggered = false;
     private int remainingCells;
+
+    LanguageDAO language = LanguageDAO.getInstance();
 
     private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
@@ -116,11 +119,12 @@ public class GridModel {
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
-            feedback = "Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
+            feedback = language.getString("label.feedback.flagremoved").replace("_", row+","+column+":"+numberOfFlagsAvailable);
+            //"Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
         }
         cell.leftClick();
         if(cell.hasBomb()){
-            feedback = "You triggered a bomb! Game over!";
+            feedback = language.getString("label.feedback.gameover");
             bombTriggered = true;
         }
         remainingCells--;
@@ -136,17 +140,17 @@ public class GridModel {
             cell.rightClick();
             numberOfFlagsAvailable++;
             remainingCells++;
-            feedback = "Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
+            feedback = language.getString("label.feedback.flagremoved").replace("_", row+","+column+": "+numberOfFlagsAvailable);
             return;
         }
         if(numberOfFlagsAvailable == 0){
-            feedback = "No more flags available";
+            feedback = language.getString("label.feedback.noflags");;
             return;
         }
         cell.rightClick();
         numberOfFlagsAvailable--;
         remainingCells--;
-        feedback = "Cell "+row+","+column+" flagged: "+numberOfFlagsAvailable+" flag(s) left";
+        feedback = language.getString("label.feedback.flagplaced").replace("_", row+","+column+": "+numberOfFlagsAvailable);
     }
 
     public int getRemainingCells() {
