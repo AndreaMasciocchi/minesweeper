@@ -38,6 +38,12 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     private void setGameSavable(final boolean flag){
         gameSavable = flag;
     }
+    private void setGameOver(final boolean flag){
+        gameOver = flag;
+    }
+    private void setVictory(final boolean flag){
+        victory = flag;
+    }
 
     public boolean isGameSavable(){
         return gameSavable;
@@ -48,8 +54,9 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         if (askToSave(language.getString("label.newgame.ask"))) return;
         grid.reset();
         grid = GridModel.getInstance();
-        gameOver = false;
-        setUserFeedback(language.getString("label.newgame.feedback"));
+        setGameOver(false);
+        setVictory(false);
+        setUserFeedback(language.getString("label.newgame.feedback").replace("_",String.valueOf((int)(Math.pow(grid.getGridDimension(),2)) - grid.getRemainingCells())));
     }
 
     private boolean askToSave(String action) {
@@ -125,8 +132,10 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             return;
         }
         grid = newGrid;
-
+        setGameOver(false);
+        setVictory(false);
         setGameSavable(false);
+        setUserFeedback("");
     }
 
     @Override
@@ -166,9 +175,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     }
     @Override
     public boolean isGameOver(){
-        boolean b = gameOver;
-        gameOver= false;
-        return b;
+        return gameOver;
     }
     @Override
     public boolean isVictory() {
@@ -189,10 +196,13 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         setUserFeedback(grid.getFeedback());
         if(grid.isBombTriggered()) {
             setGameSavable(false);
-            gameOver = true;
+            setGameOver(true);
+            return;
         }
+        System.out.println(grid.getRemainingCells());
         if(grid.getRemainingCells()==0){
-            victory = true;
+            setVictory(true);
+            setGameSavable(false);
             setUserFeedback(language.getString("label.win"));
         }
     }

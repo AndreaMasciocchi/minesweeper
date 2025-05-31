@@ -286,6 +286,7 @@ public class GameBoardViewFxml implements ControlledFxView {
         for(Button b : buttons) {
             b.setText("");
             b.setStyle("-fx-background-color: silver");
+            b.setDisable(true);
         }
     }
 
@@ -327,11 +328,23 @@ public class GameBoardViewFxml implements ControlledFxView {
         return this.containerPane;
     }
 
-    private void endGame(int dimension, Button button, boolean victory){
+    private void uncoverCell(Button button, int numberOfAdjacentBombs){
+        if(numberOfAdjacentBombs==0)
+            button.setText("");
+        else
+            button.setText(String.valueOf(numberOfAdjacentBombs));
+        button.setStyle("-fx-background-color: lightgrey");
+        button.setStyle("-fx-text-fill: black");
+        button.setDisable(true);
+    }
+
+    private void endGame(int dimension, Button button, boolean victory, boolean uncoverCells){
         for(int i=0;i<dimension;i++){
             for(int j=0;j<dimension;j++){
                 button = buttons.get(i*dimension+j);
                 button.setDisable(true);
+                if(uncoverCells)
+                    uncoverCell(button,gameInformationHandler.getNumberOfAdjacentBombs(i,j));
                 if(gameInformationHandler.hasCellBomb(i,j)) {
                     button.setText("\uD83D\uDCA3");
                     button.setStyle("-fx-background-color: " + (victory ? "#00ff00" : "#ff0000"));
@@ -346,11 +359,11 @@ public class GameBoardViewFxml implements ControlledFxView {
         int dimension = gameInformationHandler.getGridDimension();
         Button button = null;
         if(gameInformationHandler.isGameOver()){
-            endGame(dimension, button, false);
+            endGame(dimension, button, false,false);
             return;
         }
         if (gameInformationHandler.isVictory()) {
-            endGame(dimension, button, true);
+            endGame(dimension, button, true,true);
             return;
         }
         for(int i=0;i<dimension;i++){
@@ -359,13 +372,7 @@ public class GameBoardViewFxml implements ControlledFxView {
                 button.setDisable(false);
                 if(!gameInformationHandler.isCellCovered(i,j)) {
                     int number_adjacent_bombs = gameInformationHandler.getNumberOfAdjacentBombs(i, j);
-                    if(number_adjacent_bombs==0)
-                        button.setText("");
-                    else
-                        button.setText(String.valueOf(number_adjacent_bombs));
-                    button.setStyle("-fx-background-color: lightgrey");
-                    button.setStyle("-fx-text-fill: black");
-                    button.setDisable(true);
+                    uncoverCell(button,number_adjacent_bombs);
                     continue;
                 }
                 button.setStyle("-fx-background-color: silver");

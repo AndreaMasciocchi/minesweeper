@@ -13,8 +13,6 @@ public class LanguageDAO {
     private static final UserPreferencesInterface model = UserPreferencesModel.getInstance();
 
     private LanguageDAO(String languageTag) {
-        //bundle = ResourceBundle.getBundle("i18n.language",Locale.forLanguageTag(checkLanguageTag(languageTag) ? languageTag : supportedLanguages[0]));
-        //bundle = ResourceBundle.getBundle("language",Locale.US);
         bundle = ResourceBundle.getBundle("language",Locale.forLanguageTag(checkLanguageTag(languageTag) ? languageTag : supportedLanguages[0]));
     }
 

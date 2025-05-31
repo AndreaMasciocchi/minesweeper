@@ -8,7 +8,7 @@ import java.util.Collections;
 
 public class GridModel {
     private final static int GRID_DIMENSION = 9;
-    private final static int MAX_BOMBS_NUMBER = 80;
+    private final static int MAX_BOMBS_NUMBER = GRID_DIMENSION*GRID_DIMENSION-1;
     private static GridModel myself;
     @JsonProperty(required = true)
     private final int numberOfBombs;
@@ -19,13 +19,14 @@ public class GridModel {
     @JsonProperty(required = true)
     private final Cell[][] grid = new Cell[GRID_DIMENSION][GRID_DIMENSION];
     private transient boolean bombTriggered = false;
+    @JsonProperty(required = true)
     private int remainingCells;
     private transient LanguageDAO language = LanguageDAO.getInstance();
 
     private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
         this.numberOfFlagsAvailable = numberOfBombs;
-        this.remainingCells = GRID_DIMENSION*GRID_DIMENSION;
+        this.remainingCells = GRID_DIMENSION*GRID_DIMENSION - numberOfBombs;
 
         ArrayList<Boolean> bombsDistribution = new ArrayList<>();
         for(int i=0;i<numberOfBombs;i++)
@@ -50,7 +51,7 @@ public class GridModel {
             int numberOfBombs;
             try{
                 numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
-                if(numberOfBombs<=0 || numberOfBombs==MAX_BOMBS_NUMBER)
+                if(numberOfBombs<=0 || numberOfBombs>=MAX_BOMBS_NUMBER)
                     throw new NumberFormatException();
             }catch (NumberFormatException e){
                 numberOfBombs = Integer.parseInt(preferences.getDefaultPreferences("Mines"));
@@ -137,7 +138,6 @@ public class GridModel {
         if(cell.hasFlag()){
             cell.rightClick();
             numberOfFlagsAvailable++;
-            remainingCells++;
             feedback = language.getString("label.feedback.flagremoved").replace("_", row+","+column+": "+numberOfFlagsAvailable);
             return;
         }
@@ -147,7 +147,6 @@ public class GridModel {
         }
         cell.rightClick();
         numberOfFlagsAvailable--;
-        remainingCells--;
         feedback = language.getString("label.feedback.flagplaced").replace("_", row+","+column+": "+numberOfFlagsAvailable);
     }
 
