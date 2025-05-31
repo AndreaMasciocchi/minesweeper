@@ -20,8 +20,7 @@ public class GridModel {
     private final Cell[][] grid = new Cell[GRID_DIMENSION][GRID_DIMENSION];
     private transient boolean bombTriggered = false;
     private int remainingCells;
-
-    LanguageDAO language = LanguageDAO.getInstance();
+    private transient LanguageDAO language = LanguageDAO.getInstance();
 
     private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
