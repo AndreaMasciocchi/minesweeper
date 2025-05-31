@@ -15,8 +15,7 @@ public class LanguageDAO {
     private LanguageDAO(String languageTag) {
         //bundle = ResourceBundle.getBundle("i18n.language",Locale.forLanguageTag(checkLanguageTag(languageTag) ? languageTag : supportedLanguages[0]));
         //bundle = ResourceBundle.getBundle("language",Locale.US);
-        bundle = ResourceBundle.getBundle("language");
-        System.out.println(Locale.US);
+        bundle = ResourceBundle.getBundle("language",Locale.forLanguageTag(checkLanguageTag(languageTag) ? languageTag : supportedLanguages[0]));
     }
 
     public static LanguageDAO getInstance(){

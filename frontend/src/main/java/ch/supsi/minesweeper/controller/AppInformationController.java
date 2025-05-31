@@ -1,14 +1,20 @@
 package ch.supsi.minesweeper.controller;
 
 import ch.supsi.minesweeper.dataaccess.LanguageDAO;
+import ch.supsi.minesweeper.dataaccess.UserPreferencePropertiesDao;
 import ch.supsi.minesweeper.model.AppInformationHandler;
+import ch.supsi.minesweeper.model.PreferencesDataAccessInterface;
 import javafx.scene.control.Alert;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class AppInformationController implements AppInformationHandler {
 
     private static AppInformationController myself;
-
-    LanguageDAO language = LanguageDAO.getInstance();
+    private final LanguageDAO language = LanguageDAO.getInstance();
+    private final PreferencesDataAccessInterface preferences = UserPreferencePropertiesDao.getInstance();
 
     public static AppInformationHandler getInstance(){
         if(myself==null){
@@ -37,6 +43,13 @@ public class AppInformationController implements AppInformationHandler {
 
     @Override
     public void preferences() {
-
+        try {
+            Desktop.getDesktop().open(new File(preferences.getUserPreferencesFilePath().toString()));
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(language.getString("label.preferences.error"));
+            alert.setHeaderText(language.getString("label.preferences.header"));
+            alert.setContentText(language.getString("label.preferences.content"));
+        }
     }
 }
