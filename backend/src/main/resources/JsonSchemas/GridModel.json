@@ -44,8 +44,11 @@
     },
     "numberOfFlagsAvailable" : {
       "type" : "integer"
+    },
+    "remainingCells" : {
+      "type" : "integer"
     }
   },
-  "required": ["grid","numberOfBombs","numberOfFlagsAvailable"],
+  "required": ["grid","numberOfBombs","numberOfFlagsAvailable","remainingCells"],
   "additionalProperties":false
 }
