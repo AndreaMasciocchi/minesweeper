@@ -3,7 +3,7 @@ package ch.supsi.minesweeper.dataaccess;
 import ch.supsi.minesweeper.Exceptions.FileProcessingException;
 import ch.supsi.minesweeper.Exceptions.FileSyntaxException;
 import ch.supsi.minesweeper.Exceptions.MalformedFileException;
-import ch.supsi.minesweeper.model.Cell;
+import ch.supsi.minesweeper.model.CellEventHandler;
 import ch.supsi.minesweeper.model.GridModel;
 import ch.supsi.minesweeper.model.JsonValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -115,7 +115,7 @@ public class JsonPersistenceDAO extends PersistenceDAO {
     private Gson getSerializer(){
         if(serializer ==null){
             GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(Cell.class,new CellAdapter());
+            builder.registerTypeAdapter(CellEventHandler.class,new CellAdapter());
             serializer = builder.create();
         }
         return serializer;
@@ -125,7 +125,7 @@ public class JsonPersistenceDAO extends PersistenceDAO {
         if(deserializer==null){
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(GridModel.class,(InstanceCreator<GridModel>) type -> GridModel.getInstance());
-            builder.registerTypeAdapter(Cell.class,new CellAdapter());
+            builder.registerTypeAdapter(CellEventHandler.class,new CellAdapter());
             deserializer = builder.create();
         }
         return deserializer;

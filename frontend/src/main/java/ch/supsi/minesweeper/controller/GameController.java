@@ -56,9 +56,9 @@ public class GameController implements GameEventHandler{
     }
 
     @Override
-    public void quit() {
-        handler.quit();
-        views.forEach(DataView::update);
+    public boolean quit() {
+        return handler.quit();
+        //views.forEach(DataView::update);
     }
 
 }

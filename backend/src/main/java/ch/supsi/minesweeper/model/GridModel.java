@@ -17,7 +17,7 @@ public class GridModel {
     private transient String feedback;
     private final static UserPreferencesInterface preferences = UserPreferencesModel.getInstance();
     @JsonProperty(required = true)
-    private final Cell[][] grid = new Cell[GRID_DIMENSION][GRID_DIMENSION];
+    private final CellEventHandler[][] grid = new CellEventHandler[GRID_DIMENSION][GRID_DIMENSION];
     private transient boolean bombTriggered = false;
     @JsonProperty(required = true)
     private int remainingCells;
@@ -114,7 +114,7 @@ public class GridModel {
     public void leftClick(int row, int column){
         if(!isCoordinatesValid(row,column))
             return;
-        Cell cell = grid[row][column];
+        CellEventHandler cell = grid[row][column];
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
@@ -132,7 +132,7 @@ public class GridModel {
     public void rightClick(int row, int column){
         if(!isCoordinatesValid(row,column))
             return;
-        Cell cell = grid[row][column];
+        CellEventHandler cell = grid[row][column];
         if(!cell.isCovered())
             return;
         if(cell.hasFlag()){

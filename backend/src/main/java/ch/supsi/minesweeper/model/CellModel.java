@@ -1,6 +1,6 @@
 package ch.supsi.minesweeper.model;
 
-public class CellModel implements Cell {
+public class CellModel implements CellEventHandler {
     private final boolean hasBomb;
     private boolean hasFlag = false;
     private boolean isCovered = true;

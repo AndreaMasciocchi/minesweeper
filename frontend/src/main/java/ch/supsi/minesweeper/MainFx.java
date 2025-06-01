@@ -5,6 +5,7 @@ import ch.supsi.minesweeper.controller.GameController;
 import ch.supsi.minesweeper.model.*;
 import ch.supsi.minesweeper.view.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -57,7 +58,6 @@ public class MainFx extends Application {
                     // replace this hard close
                     // by delegating the work to a suitable controller
                     gameEventHandler.quit();
-                    primaryStage.close();
                 }
         );
 
