@@ -11,6 +11,6 @@ public interface GameEventHandler extends EventHandler {
 
     void open();
 
-    boolean quit();
+    void quit();
 
 }
