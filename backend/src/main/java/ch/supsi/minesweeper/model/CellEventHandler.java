@@ -1,6 +1,6 @@
 package ch.supsi.minesweeper.model;
 
-public interface Cell {
+public interface CellEventHandler extends EventHandler{
     void rightClick();
     void leftClick();
     boolean isCovered();

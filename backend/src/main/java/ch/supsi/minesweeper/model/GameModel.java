@@ -154,6 +154,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     public void quit() {
         if(askToSave(language.getString("label.askToSave.quit"))) return;
         javafx.application.Platform.exit();
+        System.exit(0);
     }
 
     private void setUserFeedback(String msg){

@@ -1,16 +1,16 @@
 package ch.supsi.minesweeper.dataaccess;
 
-import ch.supsi.minesweeper.model.Cell;
+import ch.supsi.minesweeper.model.CellEventHandler;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-public class CellAdapter implements JsonSerializer<Cell>, JsonDeserializer<Cell> {
+public class CellAdapter implements JsonSerializer<CellEventHandler>, JsonDeserializer<CellEventHandler> {
     private static final String CLASSNAME = "CLASSNAME";
     private static final String DATA = "DATA";
 
-    public Cell deserialize(JsonElement jsonElement, Type type,
-                           JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public CellEventHandler deserialize(JsonElement jsonElement, Type type,
+                                        JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
@@ -26,7 +26,7 @@ public class CellAdapter implements JsonSerializer<Cell>, JsonDeserializer<Cell>
         return jsonDeserializationContext.deserialize(jsonObject.get(DATA), klass);
     }
 
-    public JsonElement serialize(Cell jsonElement, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(CellEventHandler jsonElement, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty(CLASSNAME, jsonElement.getClass().getName());
         jsonObject.add(DATA, jsonSerializationContext.serialize(jsonElement));
