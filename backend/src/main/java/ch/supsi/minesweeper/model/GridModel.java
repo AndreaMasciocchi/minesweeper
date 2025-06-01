@@ -115,11 +115,11 @@ public class GridModel {
         if(!isCoordinatesValid(row,column))
             return;
         Cell cell = grid[row][column];
+        feedback = "";
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
             feedback = language.getString("label.feedback.flagremoved").replace("_", row+","+column+":"+numberOfFlagsAvailable);
-            //"Removed flag at cell "+row+","+column+": "+numberOfFlagsAvailable+" are now available";
         }
         cell.leftClick();
         if(cell.hasBomb()){

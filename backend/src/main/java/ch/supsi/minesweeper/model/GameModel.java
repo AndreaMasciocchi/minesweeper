@@ -20,6 +20,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     private boolean gameOver = false;
     private boolean victory = false;
     private boolean gameSavable = false;
+    private boolean gameNotStarted = true;
 
     private LanguageDAO language = LanguageDAO.getInstance();
 
@@ -44,7 +45,16 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     private void setVictory(final boolean flag){
         victory = flag;
     }
+    private void setGameStarted(){
+        gameNotStarted = false;
+    }
 
+    @Override
+    public boolean isGameStarted(){
+        return !gameNotStarted;
+    }
+
+    @Override
     public boolean isGameSavable(){
         return gameSavable;
     }
@@ -56,6 +66,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         grid = GridModel.getInstance();
         setGameOver(false);
         setVictory(false);
+        setGameStarted();
         setUserFeedback(language.getString("label.newgame.feedback").replace("_",String.valueOf((int)(Math.pow(grid.getGridDimension(),2)) - grid.getRemainingCells())));
     }
 
@@ -79,7 +90,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             setUserFeedback(language.getString("label.save.err1"));
             return;
         }
-        setUserFeedback(language.getString("label.save")+" "+persistenceUtilities.getLastSavedFileAbsolutePath());
+        setUserFeedback(language.getString("label.save").replace("_",persistenceUtilities.getLastSavedFileAbsolutePath()));
         setGameSavable(false);
     }
 
@@ -135,7 +146,8 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         setGameOver(false);
         setVictory(false);
         setGameSavable(false);
-        setUserFeedback("");
+        setGameStarted();
+        setUserFeedback(language.getString("label.open.loaded").replace("_",file.getAbsolutePath()));
     }
 
     @Override
@@ -199,7 +211,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
             setGameOver(true);
             return;
         }
-        System.out.println(grid.getRemainingCells());
         if(grid.getRemainingCells()==0){
             setVictory(true);
             setGameSavable(false);

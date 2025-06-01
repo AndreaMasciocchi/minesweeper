@@ -358,6 +358,8 @@ public class GameBoardViewFxml implements ControlledFxView {
     public void update() {
         int dimension = gameInformationHandler.getGridDimension();
         Button button = null;
+        if(!gameInformationHandler.isGameStarted())
+            return;
         if(gameInformationHandler.isGameOver()){
             endGame(dimension, button, false,false);
             return;

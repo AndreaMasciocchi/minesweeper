@@ -10,4 +10,5 @@ public interface GameInformationHandler{
     boolean isGameOver();
     boolean isVictory();
     boolean isGameSavable();
+    boolean isGameStarted();
 }
