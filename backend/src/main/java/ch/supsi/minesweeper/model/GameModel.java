@@ -66,6 +66,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         grid = GridModel.getInstance();
         setGameOver(false);
         setVictory(false);
+        setGameSavable(false);
         setGameStarted();
         setUserFeedback(language.getString("label.newgame.feedback").replace("_",String.valueOf((int)(Math.pow(grid.getGridDimension(),2)) - grid.getRemainingCells())));
     }

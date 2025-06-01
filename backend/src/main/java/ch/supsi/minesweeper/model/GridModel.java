@@ -115,6 +115,7 @@ public class GridModel {
         if(!isCoordinatesValid(row,column))
             return;
         CellEventHandler cell = grid[row][column];
+        feedback = "";
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
