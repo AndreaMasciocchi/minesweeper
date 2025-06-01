@@ -7,21 +7,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class UserPreferencePropertiesDao implements PreferencesDataAccessInterface {
+public class UserPreferencePropertiesDAO implements PreferencesDataAccessInterface {
     private static final String defaultPreferencesPath = "/default-user-preferences.properties";
     private static final String userHomeDirectory = System.getProperty("user.home");
     private static final String preferencesDirectory = ".minesweeper";
     private static final String preferencesFile = "preferences.properties";
 
-    public static UserPreferencePropertiesDao dao;
+    public static UserPreferencePropertiesDAO dao;
 
     private static Properties userPreferences;
 
-    protected UserPreferencePropertiesDao() {}
+    protected UserPreferencePropertiesDAO() {}
 
-    public static UserPreferencePropertiesDao getInstance() {
+    public static UserPreferencePropertiesDAO getInstance() {
         if (dao == null) {
-            dao = new UserPreferencePropertiesDao();
+            dao = new UserPreferencePropertiesDAO();
         }
 
         return dao;

@@ -1,7 +1,6 @@
 package ch.supsi.minesweeper.dataaccess;
 
-import ch.supsi.minesweeper.model.UserPreferencesInterface;
-import ch.supsi.minesweeper.model.UserPreferencesModel;
+import ch.supsi.minesweeper.utility.UserPreferences;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -10,7 +9,7 @@ public class LanguageDAO {
     private ResourceBundle bundle;
     private static LanguageDAO myself;
     private static final String[] supportedLanguages = {"en-US", "it-CH"};
-    private static final UserPreferencesInterface model = UserPreferencesModel.getInstance();
+    private static final UserPreferences model = UserPreferences.getInstance();
 
     private LanguageDAO(String languageTag) {
         bundle = ResourceBundle.getBundle("language",Locale.forLanguageTag(checkLanguageTag(languageTag) ? languageTag : supportedLanguages[0]));

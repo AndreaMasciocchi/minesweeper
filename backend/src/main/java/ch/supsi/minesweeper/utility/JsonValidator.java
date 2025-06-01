@@ -1,4 +1,4 @@
-package ch.supsi.minesweeper.model;
+package ch.supsi.minesweeper.utility;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,8 +7,6 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.victools.jsonschema.generator.*;
 
-import java.awt.image.ImageProducer;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 

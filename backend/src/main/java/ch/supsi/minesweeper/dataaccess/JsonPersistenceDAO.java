@@ -5,7 +5,7 @@ import ch.supsi.minesweeper.Exceptions.FileSyntaxException;
 import ch.supsi.minesweeper.Exceptions.MalformedFileException;
 import ch.supsi.minesweeper.model.CellEventHandler;
 import ch.supsi.minesweeper.model.GridModel;
-import ch.supsi.minesweeper.model.JsonValidator;
+import ch.supsi.minesweeper.utility.JsonValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

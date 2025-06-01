@@ -1,6 +1,7 @@
 package ch.supsi.minesweeper.model;
 
 import ch.supsi.minesweeper.dataaccess.LanguageDAO;
+import ch.supsi.minesweeper.utility.UserPreferences;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ public class GridModel {
     @JsonProperty(required = true)
     private int numberOfFlagsAvailable;
     private transient String feedback;
-    private final static UserPreferencesInterface preferences = UserPreferencesModel.getInstance();
+    private final static UserPreferences preferences = UserPreferences.getInstance();
+
     @JsonProperty(required = true)
     private final CellEventHandler[][] grid = new CellEventHandler[GRID_DIMENSION][GRID_DIMENSION];
     private transient boolean bombTriggered = false;

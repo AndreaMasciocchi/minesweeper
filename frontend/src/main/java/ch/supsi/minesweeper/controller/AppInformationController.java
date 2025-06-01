@@ -1,7 +1,7 @@
 package ch.supsi.minesweeper.controller;
 
 import ch.supsi.minesweeper.dataaccess.LanguageDAO;
-import ch.supsi.minesweeper.dataaccess.UserPreferencePropertiesDao;
+import ch.supsi.minesweeper.dataaccess.UserPreferencePropertiesDAO;
 import ch.supsi.minesweeper.model.AppInformationHandler;
 import ch.supsi.minesweeper.model.PreferencesDataAccessInterface;
 import javafx.scene.control.Alert;
@@ -14,7 +14,7 @@ public class AppInformationController implements AppInformationHandler {
 
     private static AppInformationController myself;
     private final LanguageDAO language = LanguageDAO.getInstance();
-    private final PreferencesDataAccessInterface preferences = UserPreferencePropertiesDao.getInstance();
+    private final PreferencesDataAccessInterface preferences = UserPreferencePropertiesDAO.getInstance();
 
     public static AppInformationHandler getInstance(){
         if(myself==null){

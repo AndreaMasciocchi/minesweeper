@@ -1,25 +1,26 @@
-package ch.supsi.minesweeper.model;
+package ch.supsi.minesweeper.utility;
 
-import ch.supsi.minesweeper.dataaccess.UserPreferencePropertiesDao;
+import ch.supsi.minesweeper.dataaccess.UserPreferencePropertiesDAO;
+import ch.supsi.minesweeper.model.PreferencesDataAccessInterface;
 
 import java.util.Properties;
 
-public class UserPreferencesModel implements UserPreferencesInterface {
-    private static UserPreferencesModel model;
-    private static final PreferencesDataAccessInterface preferencesDao = UserPreferencePropertiesDao.getInstance();
+public class UserPreferences {
+    private static UserPreferences model;
+    private static final PreferencesDataAccessInterface preferencesDao = UserPreferencePropertiesDAO.getInstance();
     private final Properties userPereferences;
 
-    protected UserPreferencesModel() { userPereferences = preferencesDao.getPreferences(); }
+    protected UserPreferences() { userPereferences = preferencesDao.getPreferences(); }
 
-    public static UserPreferencesModel getInstance() {
+    public static UserPreferences getInstance() {
         if (model == null) {
-            model = new UserPreferencesModel();
+            model = new UserPreferences();
         }
 
         return model;
     }
 
-    @Override
+
     public String getPreferences(String key) {
         if (key == null || key.isEmpty()) {
             return null;
@@ -31,14 +32,14 @@ public class UserPreferencesModel implements UserPreferencesInterface {
 
         return userPereferences.getProperty(key);
     }
-    @Override
+
     public String getDefaultPreferences(String key){
         if (key == null || key.isEmpty())
             return null;
         return preferencesDao.getDefaultPreferences().getProperty(key);
     }
 
-    @Override
+
     public void setPreferences(String key, String value) {
         if (key == null || key.isEmpty()) {
             return;
