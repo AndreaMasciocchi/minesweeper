@@ -15,7 +15,7 @@ public abstract class PersistenceDAO implements DataPersistenceInterface {
         try {
             savingsPath = Files.createDirectories(Path.of(userHomeDirectory,savedGamesDirectory));
         } catch (IOException e) {
-            //
+            System.err.println("An error occurred while creating the path");
         }
     }
 }

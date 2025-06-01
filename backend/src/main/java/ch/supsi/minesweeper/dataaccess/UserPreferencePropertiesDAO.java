@@ -61,16 +61,11 @@ public class UserPreferencePropertiesDAO implements PreferencesDataAccessInterfa
         }
 
         if (!userPreferencesDirectoryExists()) {
-            // user preferences directory does not exist
-            // create it
             this.createUserPreferencesDirectory();
         }
 
         if (!userPreferencesFileExists()) {
-            // user preferences file does not exist
-            // create it
             try {
-                // create user preferences file (with default preferences)
                 FileOutputStream outputStream = new FileOutputStream(String.valueOf(this.getUserPreferencesFilePath()));
                 defaultPreferences.store(outputStream, null);
                 return true;
@@ -88,12 +83,9 @@ public class UserPreferencePropertiesDAO implements PreferencesDataAccessInterfa
         try {
             InputStream defaultPreferencesStream = this.getClass().getResourceAsStream(defaultPreferencesPath);
             defaultPreferences.load(defaultPreferencesStream);
-
-        } catch (IOException ignored) {
-            ;
+        } catch (IOException e) {
+            System.err.println("Error loading the default preferences");
         }
-
-        // return the properties object with the loaded preferences
         return defaultPreferences;
     }
 
@@ -102,10 +94,9 @@ public class UserPreferencePropertiesDAO implements PreferencesDataAccessInterfa
         try {
             preferences.load(new FileInputStream(String.valueOf(path)));
 
-        } catch (IOException ignoredForDemoPurposes) {
-            return null;
+        } catch (IOException e) {
+            System.err.println("Error loading the preferences");
         }
-
         return preferences;
     }
 
@@ -119,11 +110,8 @@ public class UserPreferencePropertiesDAO implements PreferencesDataAccessInterfa
             userPreferences = this.loadPreferences(this.getUserPreferencesFilePath());
             return userPreferences;
         }
-
         userPreferences = this.loadDefaultPreferences();
-        boolean rv = this.createUserPreferencesFile(userPreferences);
-
-        // return the properties object with the loaded preferences
+        this.createUserPreferencesFile(userPreferences);
         return userPreferences;
     }
     @Override
@@ -137,7 +125,7 @@ public class UserPreferencePropertiesDAO implements PreferencesDataAccessInterfa
             FileOutputStream outputStream = new FileOutputStream(String.valueOf(getUserPreferencesFilePath()));
             preferences.store(outputStream, "Saved preferences");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("An error occurred while saving the preferences");
         }
     }
 
