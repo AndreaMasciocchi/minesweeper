@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GridModel {
+public class GridModel extends AbstractModel {
     private final static int GRID_DIMENSION = 9;
     private final static int MAX_BOMBS_NUMBER = GRID_DIMENSION*GRID_DIMENSION-1;
     private static GridModel myself;
