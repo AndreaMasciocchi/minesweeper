@@ -1,16 +1,17 @@
 package ch.supsi.minesweeper.model;
 
 
+import java.io.File;
+
 public interface GameEventHandler extends EventHandler {
 
     void newGame();
 
     void save();
 
-    void saveAs();
+    void saveAs(File file);
 
-    void open();
+    void open(File file);
 
     void quit();
-
 }

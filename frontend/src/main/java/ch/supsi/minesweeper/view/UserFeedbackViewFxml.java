@@ -4,6 +4,8 @@ import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.AbstractModel;
 import ch.supsi.minesweeper.model.GameInformationHandler;
 import ch.supsi.minesweeper.model.GameModel;
+import ch.supsi.minesweeper.utility.UserFeedbackListener;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -13,9 +15,9 @@ import javafx.scene.text.Text;
 import java.io.IOException;
 import java.net.URL;
 
-public class UserFeedbackViewFxml implements UncontrolledFxView {
+public class UserFeedbackViewFxml implements UncontrolledFxView, UserFeedbackListener {
     private static UserFeedbackViewFxml myself;
-    private GameInformationHandler gameInformationHandler;
+    private GameModel gameModel;
     @FXML
     private ScrollPane containerPane;
     @FXML
@@ -44,7 +46,8 @@ public class UserFeedbackViewFxml implements UncontrolledFxView {
 
     @Override
     public void initialize(AbstractModel model) {
-        this.gameInformationHandler = (GameModel) model;
+        this.gameModel = (GameModel) model;
+        gameModel.addUserFeedbackListener(this);
         this.userFeedbackBar.setText(language.getString("label.userfeedbackbar.default"));
     }
 
@@ -55,7 +58,29 @@ public class UserFeedbackViewFxml implements UncontrolledFxView {
 
     @Override
     public void update() {
-        this.userFeedbackBar.setText(gameInformationHandler.getUserFeedback());
+    }
+
+    public void showUserFeedback(String messageKey, UserFeedbackType type, String... replacements) {
+        Platform.runLater(() -> {
+            // Recupero la stringa dal bundle
+            String msg = language.getString(messageKey);
+
+            // Applico i replacements agli underscore "_"
+            for (String r : replacements) {
+                msg = msg.replaceFirst("_", r);
+            }
+
+            // Mostro il messaggio finale
+            userFeedbackBar.setText(msg);
+
+            // Imposto il colore in base al tipo di feedback
+            switch (type) {
+                case SUCCESS -> userFeedbackBar.setStyle("-fx-fill: green;");
+                case INFO    -> userFeedbackBar.setStyle("-fx-fill: blue;");
+                case ERROR   -> userFeedbackBar.setStyle("-fx-fill: red;");
+                default      -> userFeedbackBar.setStyle("-fx-fill: black;");
+            }
+        });
     }
 
 }

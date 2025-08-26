@@ -1,7 +1,6 @@
 package ch.supsi.minesweeper.model;
 
 public interface GameInformationHandler{
-    String getUserFeedback();
     int getGridDimension();
     boolean isCellCovered(final int row, final int column);
     boolean hasCellBomb(final int row, final int column);

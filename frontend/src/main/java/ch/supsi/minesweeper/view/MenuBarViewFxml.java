@@ -11,6 +11,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -83,9 +84,9 @@ public class MenuBarViewFxml implements ControlledFxView {
 
         // save
         this.saveMenuItem.setOnAction(event -> this.gameEventHandler.save());
-        this.saveAsMenuItem.setOnAction(event->this.gameEventHandler.saveAs());
+        this.saveAsMenuItem.setOnAction(event->this.gameEventHandler.saveAs(null));
 
-        this.openMenuItem.setOnAction(event->this.gameEventHandler.open());
+        this.openMenuItem.setOnAction(event->this.gameEventHandler.open(null));
         this.quitMenuItem.setOnAction(event->this.gameEventHandler.quit());
 
         this.newMenuItem.setOnAction(event->this.gameEventHandler.newGame());

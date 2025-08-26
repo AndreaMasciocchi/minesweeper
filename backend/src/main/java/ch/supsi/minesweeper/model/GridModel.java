@@ -15,7 +15,6 @@ public class GridModel extends AbstractModel {
     private final int numberOfBombs;
     @JsonProperty(required = true)
     private int numberOfFlagsAvailable;
-    private transient String feedback;
     private final static UserPreferences preferences = UserPreferences.getInstance();
 
     @JsonProperty(required = true)
@@ -23,7 +22,6 @@ public class GridModel extends AbstractModel {
     private transient boolean bombTriggered = false;
     @JsonProperty(required = true)
     private int remainingCells;
-    private transient LanguageDAO language = LanguageDAO.getInstance();
 
     private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
@@ -68,9 +66,7 @@ public class GridModel extends AbstractModel {
     public int getGridDimension(){
         return GRID_DIMENSION;
     }
-    public String getFeedback(){
-        return feedback;
-    }
+
     public boolean isCellCovered(int row,int column){
         if(!isCoordinatesValid(row,column))
             return false;
@@ -117,15 +113,12 @@ public class GridModel extends AbstractModel {
         if(!isCoordinatesValid(row,column))
             return;
         CellEventHandler cell = grid[row][column];
-        feedback = "";
         if(cell.hasFlag()) {
             cell.rightClick();
             numberOfFlagsAvailable++;
-            feedback = language.getString("label.feedback.flagremoved").replace("_", row+","+column+":"+numberOfFlagsAvailable);
         }
         cell.leftClick();
         if(cell.hasBomb()){
-            feedback = language.getString("label.feedback.gameover");
             bombTriggered = true;
         }
         remainingCells--;
@@ -140,16 +133,13 @@ public class GridModel extends AbstractModel {
         if(cell.hasFlag()){
             cell.rightClick();
             numberOfFlagsAvailable++;
-            feedback = language.getString("label.feedback.flagremoved").replace("_", row+","+column+": "+numberOfFlagsAvailable);
             return;
         }
         if(numberOfFlagsAvailable == 0){
-            feedback = language.getString("label.feedback.noflags");;
             return;
         }
         cell.rightClick();
         numberOfFlagsAvailable--;
-        feedback = language.getString("label.feedback.flagplaced").replace("_", row+","+column+": "+numberOfFlagsAvailable);
     }
 
     public int getRemainingCells() {
