@@ -167,6 +167,11 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         }
         else{
             grid.rightClick(row,column);
+            if(grid.getNumberOfFlagsAvailable() != 0){
+                notifyUserFeedback(grid.isCellFlagged(row,column) ? "label.feedback.flagplaced" : "label.feedback.flagremoved", UserFeedbackType.INFO, "("+row+";"+column+"), " + grid.getNumberOfFlagsAvailable());
+            }else{
+                notifyUserFeedback("label.feedback.noflags", UserFeedbackType.INFO);
+            }
         }
         if(grid.isBombTriggered()) {
             setGameSavable(false);

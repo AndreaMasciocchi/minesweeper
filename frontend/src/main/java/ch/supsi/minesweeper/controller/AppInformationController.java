@@ -1,5 +1,6 @@
 package ch.supsi.minesweeper.controller;
 
+import ch.supsi.minesweeper.Main;
 import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.AppInformationHandler;
 import ch.supsi.minesweeper.utility.UserPreferences;
@@ -36,10 +37,12 @@ public class AppInformationController implements AppInformationHandler {
 
     @Override
     public void about() {
+        Package pkg = Main.class.getPackage();
+        String version = pkg.getImplementationVersion();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(language.getString("label.about"));
         alert.setHeaderText(language.getString("label.about.header"));
-        alert.setContentText(language.getString("label.about.content"));
+        alert.setContentText(language.getString("label.about.content").replace("_", version == null ? "1.0.0" : version));
         alert.showAndWait();
     }
 

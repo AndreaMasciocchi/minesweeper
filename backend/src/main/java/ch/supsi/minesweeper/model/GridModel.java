@@ -7,21 +7,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class GridModel extends AbstractModel {
-    private final static int MAX_BOMBS_NUMBER = Constant.CELL_COUNT-1;
     private static GridModel myself;
+    private final static UserPreferences preferences = UserPreferences.getInstance();
+
+    private transient boolean bombTriggered = false;
+
     @JsonProperty(required = true)
     private final int numberOfBombs;
     @JsonProperty(required = true)
     private int numberOfFlagsAvailable;
-    private final static UserPreferences preferences = UserPreferences.getInstance();
-
     @JsonProperty(required = true)
-    private final CellEventHandler[][] grid = new CellEventHandler[Constant.GRID_HEIGHT][Constant.GRID_WIDTH];
-    private transient boolean bombTriggered = false;
+    private final CellModel[][] grid = new CellModel[Constant.GRID_HEIGHT][Constant.GRID_WIDTH];
     @JsonProperty(required = true)
     private int remainingCells;
 
-    private GridModel(final int numberOfBombs){
+    private GridModel(){
+        int numberOfBombs;
+        try{
+            numberOfBombs = Integer.parseInt(preferences.getPreference("bombs"));
+            if(numberOfBombs<=0 || numberOfBombs>=Constant.MAX_BOMBS_NUMBER)
+                throw new NumberFormatException();
+        }catch (NumberFormatException e){
+            numberOfBombs = Constant.DEFAULT_BOMBS;
+        }
+
         this.numberOfBombs = numberOfBombs;
         this.numberOfFlagsAvailable = numberOfBombs;
         this.remainingCells = Constant.CELL_COUNT - numberOfBombs;
@@ -46,21 +55,13 @@ public class GridModel extends AbstractModel {
 
     public static GridModel getInstance(){
         if(myself==null) {
-            int numberOfBombs;
-            try{
-                numberOfBombs = Integer.parseInt(preferences.getPreference("bombs"));
-                if(numberOfBombs<=0 || numberOfBombs>=MAX_BOMBS_NUMBER)
-                    throw new NumberFormatException();
-            }catch (NumberFormatException e){
-                numberOfBombs = Integer.parseInt(preferences.getPreference("bombs"));
-            }
-            myself = new GridModel(numberOfBombs);
+            myself = new GridModel();
         }
         return myself;
     }
 
     public void reset(){
-        myself = new GridModel(numberOfBombs);
+        myself = new GridModel();
     }
 
     public boolean isCellCovered(int row,int column){
@@ -140,5 +141,9 @@ public class GridModel extends AbstractModel {
 
     public int getRemainingCells() {
         return remainingCells;
+    }
+
+    public int getNumberOfFlagsAvailable() {
+        return numberOfFlagsAvailable;
     }
 }

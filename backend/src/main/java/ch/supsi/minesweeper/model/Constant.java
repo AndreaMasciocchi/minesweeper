@@ -8,6 +8,8 @@ public final class Constant {
     public static final int GRID_WIDTH  = 9;
     public static final int CELL_COUNT  = GRID_HEIGHT * GRID_WIDTH;
 
+    public static final int MAX_BOMBS_NUMBER = CELL_COUNT-1;
+
     // CONFIG
     public static final Path CONFIG_PATH = Paths.get(System.getProperty("user.home"), ".minesweeper", "preferences.properties");
 
