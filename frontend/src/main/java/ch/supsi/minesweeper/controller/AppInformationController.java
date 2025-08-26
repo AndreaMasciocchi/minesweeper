@@ -4,13 +4,13 @@ import ch.supsi.minesweeper.Main;
 import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.AppInformationHandler;
 import ch.supsi.minesweeper.utility.UserPreferences;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
 
 
 public class AppInformationController implements AppInformationHandler {

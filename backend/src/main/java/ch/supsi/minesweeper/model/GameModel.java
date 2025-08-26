@@ -3,7 +3,7 @@ package ch.supsi.minesweeper.model;
 import ch.supsi.minesweeper.Exceptions.FileProcessingException;
 import ch.supsi.minesweeper.Exceptions.FileSyntaxException;
 import ch.supsi.minesweeper.Exceptions.MalformedFileException;
-import ch.supsi.minesweeper.dataaccess.*;
+import ch.supsi.minesweeper.dataaccess.JsonPersistenceDAO;
 import ch.supsi.minesweeper.utility.UserActionListener;
 import ch.supsi.minesweeper.utility.UserFeedbackListener;
 import ch.supsi.minesweeper.utility.UserFeedbackListener.UserFeedbackType;

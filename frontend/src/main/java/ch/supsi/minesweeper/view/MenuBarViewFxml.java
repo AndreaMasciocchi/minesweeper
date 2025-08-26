@@ -1,7 +1,6 @@
 package ch.supsi.minesweeper.view;
 
 import ch.supsi.minesweeper.controller.AppInformationController;
-import ch.supsi.minesweeper.model.EventHandler;
 import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.*;
 import javafx.fxml.FXML;
@@ -11,7 +10,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 

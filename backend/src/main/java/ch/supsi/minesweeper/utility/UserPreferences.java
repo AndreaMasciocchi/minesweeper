@@ -2,12 +2,10 @@ package ch.supsi.minesweeper.utility;
 
 import ch.supsi.minesweeper.model.Constant;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
 
 public class UserPreferences {
 

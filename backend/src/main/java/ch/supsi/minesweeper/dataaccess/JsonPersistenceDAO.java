@@ -9,7 +9,10 @@ import ch.supsi.minesweeper.utility.JsonValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.JsonParseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 

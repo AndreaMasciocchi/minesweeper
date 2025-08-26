@@ -2,10 +2,12 @@ package ch.supsi.minesweeper;
 
 import ch.supsi.minesweeper.controller.GameBoardController;
 import ch.supsi.minesweeper.controller.GameController;
-import ch.supsi.minesweeper.model.*;
+import ch.supsi.minesweeper.model.AbstractModel;
+import ch.supsi.minesweeper.model.GameEventHandler;
+import ch.supsi.minesweeper.model.GameModel;
+import ch.supsi.minesweeper.model.PlayerEventHandler;
 import ch.supsi.minesweeper.view.*;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;

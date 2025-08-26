@@ -2,7 +2,6 @@ package ch.supsi.minesweeper.view;
 
 import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.model.AbstractModel;
-import ch.supsi.minesweeper.model.GameInformationHandler;
 import ch.supsi.minesweeper.model.GameModel;
 import ch.supsi.minesweeper.utility.UserFeedbackListener;
 import javafx.application.Platform;
