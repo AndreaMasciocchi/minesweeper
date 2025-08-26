@@ -1,10 +1,6 @@
 package ch.supsi.minesweeper.view;
 
-import ch.supsi.minesweeper.model.EventHandler;
-import ch.supsi.minesweeper.model.AbstractModel;
-import ch.supsi.minesweeper.model.GameInformationHandler;
-import ch.supsi.minesweeper.model.GameModel;
-import ch.supsi.minesweeper.model.PlayerEventHandler;
+import ch.supsi.minesweeper.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -356,7 +352,7 @@ public class GameBoardViewFxml implements ControlledFxView {
 
     @Override
     public void update() {
-        int dimension = gameInformationHandler.getGridDimension();
+        int dimension = Constant.GRID_WIDTH;
         Button button = null;
         if(!gameInformationHandler.isGameStarted())
             return;

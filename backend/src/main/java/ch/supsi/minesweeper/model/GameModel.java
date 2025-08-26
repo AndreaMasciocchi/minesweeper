@@ -7,6 +7,7 @@ import ch.supsi.minesweeper.dataaccess.*;
 import ch.supsi.minesweeper.utility.UserActionListener;
 import ch.supsi.minesweeper.utility.UserFeedbackListener;
 import ch.supsi.minesweeper.utility.UserFeedbackListener.UserFeedbackType;
+import ch.supsi.minesweeper.utility.UserPreferences;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,17 +16,20 @@ import java.util.List;
 
 public class GameModel extends AbstractModel implements GameEventHandler, PlayerEventHandler, GameInformationHandler{
     private static GameModel myself;
-    private GridModel grid = GridModel.getInstance();
+    private GridModel grid;
     private final DataPersistenceInterface persistenceUtilities = JsonPersistenceDAO.getInstance();
     private boolean gameOver = false;
     private boolean victory = false;
     private boolean gameSavable = false;
     private boolean gameNotStarted = true;
+    private static UserPreferences userPreferences;
 
     private final List<UserFeedbackListener> feedbackListeners = new ArrayList<>();
 
     private GameModel() {
         super();
+        userPreferences = UserPreferences.getInstance();
+        grid = GridModel.getInstance();
     }
 
     public static GameModel getInstance() {
@@ -70,7 +74,7 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         setVictory(false);
         setGameSavable(false);
         setGameStarted();
-        notifyUserFeedback("label.newgame.feedback", UserFeedbackType.INFO, String.valueOf((int)(Math.pow(grid.getGridDimension(),2)) - grid.getRemainingCells()));
+        notifyUserFeedback("label.newgame.feedback", UserFeedbackType.INFO, String.valueOf((int)(Math.pow(Constant.GRID_WIDTH,2)) - grid.getRemainingCells()));
     }
 
     @Override
@@ -127,11 +131,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
     }
 
 
-
-    @Override
-    public int getGridDimension(){
-        return grid.getGridDimension();
-    }
     @Override
     public boolean isCellCovered(int row,int column){
         return grid.isCellCovered(row,column);

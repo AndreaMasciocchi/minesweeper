@@ -26,26 +26,35 @@ public class UserPreferences {
     }
 
     private void loadPreferences() {
-        Path prefsPath = Constant.CONFIG_PATH;
+        Path path = Constant.CONFIG_PATH;
 
-        // Se il file esiste → carico da lì
-        if (Files.exists(prefsPath)) {
-            try (InputStream in = new FileInputStream(prefsPath.toFile())) {
+        if (Files.exists(path)) {
+            try (InputStream in = new FileInputStream(path.toFile())) {
                 preferences.load(in);
-                return;
             } catch (IOException e) {
-                System.err.println("Errore nel caricamento preferenze utente, uso default.");
+                System.err.println("Errore nel caricamento preferenze, uso default.");
+                setDefaults();
+                savePreferences();
             }
+        } else {
+            setDefaults();
+            savePreferences();
         }
+    }
 
-        // Se non esiste → carico i default e creo file
-        try (InputStream in = getClass().getResourceAsStream(String.valueOf(Constant.CONFIG_PATH))) {
-            if (in != null) {
-                preferences.load(in);
+    private void setDefaults() {
+        preferences.setProperty("bombs", String.valueOf(Constant.DEFAULT_BOMBS));
+        preferences.setProperty("language", Constant.DEFAULT_LANGUAGE);
+    }
+
+    public void savePreferences() {
+        try {
+            Files.createDirectories(Constant.CONFIG_PATH.getParent());
+            try (OutputStream out = new FileOutputStream(Constant.CONFIG_PATH.toFile())) {
+                preferences.store(out, "User Preferences");
             }
-            //savePreferences(); // salvo subito un file con i default
         } catch (IOException e) {
-            System.err.println("Errore nel caricamento preferenze di default.");
+            System.err.println("Errore nel salvataggio preferenze.");
         }
     }
 
@@ -54,21 +63,7 @@ public class UserPreferences {
     }
 
     public void setPreference(String key, String value) {
-        if (key == null || key.isEmpty()) return;
         preferences.setProperty(key, value);
         savePreferences();
-    }
-
-    private void savePreferences() {
-        Path prefsPath = Constant.CONFIG_PATH;
-
-        try {
-            Files.createDirectories(prefsPath.getParent());
-            try (OutputStream out = new FileOutputStream(prefsPath.toFile())) {
-                preferences.store(out, "Minesweeper User Preferences");
-            }
-        } catch (IOException e) {
-            System.err.println("Errore nel salvataggio delle preferenze.");
-        }
     }
 }

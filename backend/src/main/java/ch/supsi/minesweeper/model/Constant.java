@@ -11,5 +11,8 @@ public final class Constant {
     // CONFIG
     public static final Path CONFIG_PATH = Paths.get(System.getProperty("user.home"), ".minesweeper", "preferences.properties");
 
+    public static final String DEFAULT_LANGUAGE = "en";
+    public static final int DEFAULT_BOMBS = 10;
+
     private Constant(){}
 }

@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 public class LanguageDAO {
     private ResourceBundle bundle;
     private static LanguageDAO myself;
-    private static final String[] supportedLanguages = {"en-US", "it-CH"};
+    private static final String[] supportedLanguages = {"en", "it"};
     private static final UserPreferences model = UserPreferences.getInstance();
 
     private LanguageDAO(String languageTag) {

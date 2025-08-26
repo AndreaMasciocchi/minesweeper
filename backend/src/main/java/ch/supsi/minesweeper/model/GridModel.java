@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class GridModel extends AbstractModel {
-    private final static int GRID_DIMENSION = 9;
-    private final static int MAX_BOMBS_NUMBER = GRID_DIMENSION*GRID_DIMENSION-1;
+    private final static int MAX_BOMBS_NUMBER = Constant.CELL_COUNT-1;
     private static GridModel myself;
     @JsonProperty(required = true)
     private final int numberOfBombs;
@@ -17,7 +16,7 @@ public class GridModel extends AbstractModel {
     private final static UserPreferences preferences = UserPreferences.getInstance();
 
     @JsonProperty(required = true)
-    private final CellEventHandler[][] grid = new CellEventHandler[GRID_DIMENSION][GRID_DIMENSION];
+    private final CellEventHandler[][] grid = new CellEventHandler[Constant.GRID_HEIGHT][Constant.GRID_WIDTH];
     private transient boolean bombTriggered = false;
     @JsonProperty(required = true)
     private int remainingCells;
@@ -25,45 +24,43 @@ public class GridModel extends AbstractModel {
     private GridModel(final int numberOfBombs){
         this.numberOfBombs = numberOfBombs;
         this.numberOfFlagsAvailable = numberOfBombs;
-        this.remainingCells = GRID_DIMENSION*GRID_DIMENSION - numberOfBombs;
+        this.remainingCells = Constant.CELL_COUNT - numberOfBombs;
 
         ArrayList<Boolean> bombsDistribution = new ArrayList<>();
         for(int i=0;i<numberOfBombs;i++)
             bombsDistribution.add(true);
-        for(int i=0;i<GRID_DIMENSION*GRID_DIMENSION-numberOfBombs;i++)
+        for(int i=0;i<Constant.CELL_COUNT-numberOfBombs;i++)
             bombsDistribution.add(false);
         Collections.shuffle(bombsDistribution);
 
-        for(int i=0;i<GRID_DIMENSION;i++){
-            for(int j=0;j<GRID_DIMENSION;j++){
-                grid[i][j] = new CellModel(bombsDistribution.get(i*GRID_DIMENSION+j));
+        for(int i=0;i<Constant.GRID_HEIGHT;i++){
+            for(int j=0;j<Constant.GRID_WIDTH;j++){
+                grid[i][j] = new CellModel(bombsDistribution.get(i*Constant.GRID_WIDTH+j));
             }
         }
     }
 
     private boolean isCoordinatesValid(int row, int column){
-        return row>=0 && row<GRID_DIMENSION && column>=0 && column<GRID_DIMENSION;
+        return row>=0 && row<Constant.GRID_HEIGHT && column>=0 && column<Constant.GRID_WIDTH;
     }
 
     public static GridModel getInstance(){
         if(myself==null) {
             int numberOfBombs;
             try{
-                numberOfBombs = Integer.parseInt(preferences.getPreference("Mines"));
+                numberOfBombs = Integer.parseInt(preferences.getPreference("bombs"));
                 if(numberOfBombs<=0 || numberOfBombs>=MAX_BOMBS_NUMBER)
                     throw new NumberFormatException();
             }catch (NumberFormatException e){
-                numberOfBombs = Integer.parseInt(preferences.getPreference("Mines"));
+                numberOfBombs = Integer.parseInt(preferences.getPreference("bombs"));
             }
             myself = new GridModel(numberOfBombs);
         }
         return myself;
     }
+
     public void reset(){
         myself = new GridModel(numberOfBombs);
-    }
-    public int getGridDimension(){
-        return GRID_DIMENSION;
     }
 
     public boolean isCellCovered(int row,int column){
