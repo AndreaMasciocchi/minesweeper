@@ -1,57 +1,74 @@
 package ch.supsi.minesweeper.utility;
 
-import ch.supsi.minesweeper.dataaccess.UserPreferencePropertiesDAO;
-import ch.supsi.minesweeper.model.PreferencesDataAccessInterface;
+import ch.supsi.minesweeper.model.Constant;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import java.io.*;
+import java.nio.file.*;
+
 public class UserPreferences {
-    private static UserPreferences model;
-    private static final PreferencesDataAccessInterface preferencesDao = UserPreferencePropertiesDAO.getInstance();
-    private final Properties userPereferences;
 
-    protected UserPreferences() { userPereferences = preferencesDao.getPreferences(); }
+    private static UserPreferences instance;
+    private final Properties preferences = new Properties();
 
-    public static UserPreferences getInstance() {
-        if (model == null) {
-            model = new UserPreferences();
-        }
-
-        return model;
+    private UserPreferences() {
+        loadPreferences();
     }
 
-
-    public String getPreferences(String key) {
-        if (key == null || key.isEmpty()) {
-            return null;
+    public static synchronized UserPreferences getInstance() {
+        if (instance == null) {
+            instance = new UserPreferences();
         }
-
-        if (userPereferences == null) {
-            return null;
-        }
-
-        return userPereferences.getProperty(key);
+        return instance;
     }
 
-    public String getDefaultPreferences(String key){
-        if (key == null || key.isEmpty())
-            return null;
-        return preferencesDao.getDefaultPreferences().getProperty(key);
-    }
+    private void loadPreferences() {
+        Path prefsPath = Constant.CONFIG_PATH;
 
-
-    public void setPreferences(String key, String value) {
-        if (key == null || key.isEmpty()) {
-            return;
+        // Se il file esiste → carico da lì
+        if (Files.exists(prefsPath)) {
+            try (InputStream in = new FileInputStream(prefsPath.toFile())) {
+                preferences.load(in);
+                return;
+            } catch (IOException e) {
+                System.err.println("Errore nel caricamento preferenze utente, uso default.");
+            }
         }
 
-        if (userPereferences == null) {
-            return;
+        // Se non esiste → carico i default e creo file
+        try (InputStream in = getClass().getResourceAsStream(String.valueOf(Constant.CONFIG_PATH))) {
+            if (in != null) {
+                preferences.load(in);
+            }
+            //savePreferences(); // salvo subito un file con i default
+        } catch (IOException e) {
+            System.err.println("Errore nel caricamento preferenze di default.");
         }
-
-        userPereferences.setProperty(key, value);
-        preferencesDao.setPreferences(userPereferences);
     }
 
+    public String getPreference(String key) {
+        return preferences.getProperty(key);
+    }
 
+    public void setPreference(String key, String value) {
+        if (key == null || key.isEmpty()) return;
+        preferences.setProperty(key, value);
+        savePreferences();
+    }
+
+    private void savePreferences() {
+        Path prefsPath = Constant.CONFIG_PATH;
+
+        try {
+            Files.createDirectories(prefsPath.getParent());
+            try (OutputStream out = new FileOutputStream(prefsPath.toFile())) {
+                preferences.store(out, "Minesweeper User Preferences");
+            }
+        } catch (IOException e) {
+            System.err.println("Errore nel salvataggio delle preferenze.");
+        }
+    }
 }

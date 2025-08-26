@@ -17,7 +17,7 @@ public class LanguageDAO {
 
     public static LanguageDAO getInstance(){
         if(myself == null)
-            myself = new LanguageDAO(model.getPreferences("Language"));
+            myself = new LanguageDAO(model.getPreference("language"));
         return myself;
     }
 

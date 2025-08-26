@@ -1,6 +1,5 @@
 package ch.supsi.minesweeper.model;
 
-import ch.supsi.minesweeper.dataaccess.LanguageDAO;
 import ch.supsi.minesweeper.utility.UserPreferences;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -50,11 +49,11 @@ public class GridModel extends AbstractModel {
         if(myself==null) {
             int numberOfBombs;
             try{
-                numberOfBombs = Integer.parseInt(preferences.getPreferences("Mines"));
+                numberOfBombs = Integer.parseInt(preferences.getPreference("Mines"));
                 if(numberOfBombs<=0 || numberOfBombs>=MAX_BOMBS_NUMBER)
                     throw new NumberFormatException();
             }catch (NumberFormatException e){
-                numberOfBombs = Integer.parseInt(preferences.getDefaultPreferences("Mines"));
+                numberOfBombs = Integer.parseInt(preferences.getPreference("Mines"));
             }
             myself = new GridModel(numberOfBombs);
         }
