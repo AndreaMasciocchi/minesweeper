@@ -73,18 +73,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         notifyUserFeedback("label.newgame.feedback", UserFeedbackType.INFO, String.valueOf((int)(Math.pow(grid.getGridDimension(),2)) - grid.getRemainingCells()));
     }
 
-//    private boolean askToSave(String action) {
-//        if(isGameSavable()){
-//            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//            alert.setTitle(language.getString("label.askToSave.title"));
-//            alert.setHeaderText(language.getString("label.askToSave.header").replace("_", action));
-//            alert.setContentText(language.getString("label.askToSave.content"));
-//            Optional<ButtonType> result = alert.showAndWait();
-//            return result.isPresent() && result.get() == ButtonType.CANCEL;
-//        }
-//        return false;
-//    }
-
     @Override
     public void save() {
         try {
@@ -128,65 +116,6 @@ public class GameModel extends AbstractModel implements GameEventHandler, Player
         setGameSavable(false);
         notifyUserFeedback("label.open.loaded", UserFeedbackType.SUCCESS, file.getAbsolutePath());
     }
-
-//    @Override
-//    public void saveAs() {
-//        FileDialog fileDialog = new FileDialog(new Frame(),language.getString("label.file.saveAs"),FileDialog.SAVE);
-//        fileDialog.setVisible(true);
-//        String directory = fileDialog.getDirectory();
-//        if(directory==null){
-//            notifyUserFeedback("label.save.err2", UserFeedbackType.ERROR);
-//            return;
-//        }
-//        String name = fileDialog.getFile();
-//        File file = new File(directory+File.separator+name);
-//        if(!file.exists() && !name.endsWith(".json"))
-//            file = new File(directory+File.separator+name+".json");
-//        try {
-//            persistenceUtilities.persist(grid,file);
-//        } catch (FileNotFoundException e) {
-//            notifyUserFeedback("label.save.err1" , UserFeedbackType.ERROR);
-//            return;
-//        }
-//        notifyUserFeedback("label.save", UserFeedbackType.SUCCESS, persistenceUtilities.getLastSavedFileAbsolutePath());
-//        setGameSavable(false);
-//    }
-//
-//    @Override
-//    public void open() {
-//        if(askToSave("label.open.opengame")){
-//            return;
-//        }
-//
-//        FileDialog fileDialog = new FileDialog(new Frame(),language.getString("label.open.choosefile"),FileDialog.LOAD);
-//        fileDialog.setVisible(true);
-//        String fileName = fileDialog.getFile();
-//        if(fileName==null){
-//            notifyUserFeedback("label.open.err1", UserFeedbackType.ERROR);
-//            return;
-//        }
-//        String dir = fileDialog.getDirectory();
-//        File file = new File(dir+File.separator+fileName);
-//
-//        GridModel newGrid;
-//        try {
-//            newGrid = (GridModel) persistenceUtilities.deserialize(file, GridModel.class);
-//        }catch (FileNotFoundException e){
-//            notifyUserFeedback("label.open.err2", UserFeedbackType.ERROR);
-//            return;
-//        }catch(FileSyntaxException | MalformedFileException e){
-//            notifyUserFeedback("label.open.err3", UserFeedbackType.ERROR);
-//            return;
-//        }catch (FileProcessingException e){
-//            notifyUserFeedback("label.open.err4", UserFeedbackType.ERROR);
-//            return;
-//        }
-//        grid = newGrid;
-//        setGameOver(false);
-//        setVictory(false);
-//        setGameSavable(false);
-//        notifyUserFeedback("label.open.loaded", UserFeedbackType.SUCCESS, file.getAbsolutePath());
-//    }
 
     @Override
     public void quit() {

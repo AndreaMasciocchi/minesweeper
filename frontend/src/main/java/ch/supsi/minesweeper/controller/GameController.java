@@ -9,28 +9,26 @@ import ch.supsi.minesweeper.view.DataView;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 public class GameController implements GameEventHandler{
     private static GameController myself;
-    private GameModel handler;
+    private GameModel gameModel;
     private List<DataView> views;
     private LanguageDAO language = LanguageDAO.getInstance();
 
     private GameController () {
-        this.handler = GameModel.getInstance();
-        this.handler.setUserActionListener((messageKey, actionKey) -> {
+        this.gameModel = GameModel.getInstance();
+        this.gameModel.setUserActionListener((messageKey, actionKey) -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle(language.getString("label.askToSave.title"));
             alert.setHeaderText(language.getString(messageKey).replace("_", language.getString(actionKey)));
             alert.setContentText(language.getString("label.askToSave.content"));
             Optional<ButtonType> result = alert.showAndWait();
-            return result.isPresent() && result.get() == ButtonType.OK;  // ritorna true se l'utente conferma
+            return result.isPresent() && result.get() == ButtonType.OK;
         });
     }
 
@@ -48,13 +46,13 @@ public class GameController implements GameEventHandler{
 
     @Override
     public void newGame() {
-        handler.newGame();
+        gameModel.newGame();
         views.forEach(DataView::update);
     }
 
     @Override
     public void save() {
-        handler.save();
+        gameModel.save();
         views.forEach(DataView::update);
     }
 
@@ -67,21 +65,19 @@ public class GameController implements GameEventHandler{
         file = fileChooser.showSaveDialog(null);
 
         if (file == null) {
-            handler.notifyUserFeedback("label.save.err2", UserFeedbackListener.UserFeedbackType.ERROR);
+            gameModel.notifyUserFeedback("label.save.err2", UserFeedbackListener.UserFeedbackType.ERROR);
             return;
         }
 
-        // Passa il file al model
-        ((GameModel) handler).saveAs(file);
+        gameModel.saveAs(file);
 
-        // Aggiorna le view
         views.forEach(DataView::update);
     }
 
     @Override
     public void open(File file) {
         if (askToSave("label.open.opengame")) {
-            return; // l'utente ha cancellato
+            return;
         }
 
         FileChooser fileChooser = new FileChooser();
@@ -91,53 +87,30 @@ public class GameController implements GameEventHandler{
         file = fileChooser.showOpenDialog(null);
 
         if (file == null) {
-            handler.notifyUserFeedback("label.open.err1", UserFeedbackType.ERROR);
+            gameModel.notifyUserFeedback("label.open.err1", UserFeedbackType.ERROR);
             return;
         }
 
-        // Passa il file al model
-        ((GameModel) handler).open(file);
+        gameModel.open(file);
 
-        // Aggiorna le view
         views.forEach(DataView::update);
     }
 
     @Override
     public void quit() {
-        handler.quit();
+        gameModel.quit();
         views.forEach(DataView::update);
     }
 
     private boolean askToSave(String actionKey) {
-        if (!handler.isGameSavable()) return false;
+        if (!gameModel.isGameSavable()) return false;
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(language.getString("label.askToSave.title"));
         alert.setHeaderText(language.getString("label.askToSave.header").replace("_", language.getString(actionKey)));
         alert.setContentText(language.getString("label.askToSave.content"));
 
-        // Mostra l'alert e verifica se l'utente ha premuto CANCEL
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.CANCEL;
     }
-
-    private File chooseFileToOpen(Stage stage) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(language.getString("label.open.choosefile"));
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("JSON Files", "*.json")
-        );
-        return fileChooser.showOpenDialog(stage);
-    }
-
-    private File chooseFileToSave(Stage stage) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(language.getString("label.file.saveAs"));
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("JSON Files", "*.json")
-        );
-        return fileChooser.showSaveDialog(stage);
-    }
-
-
 }
